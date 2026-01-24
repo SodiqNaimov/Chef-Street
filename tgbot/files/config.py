@@ -13,5 +13,5 @@ full_path_str = full_path_str.replace("\\", "/")
 db_path = full_path_str
 
 # TOKEN
-token = '6574372160:AAHHgN30vzbG-rEtmx0mAjw8sCJL0pB8qTw'
+token = ''
 
