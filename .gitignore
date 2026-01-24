@@ -1,0 +1,7 @@
+.DS_STORE
+*.db
+*.__init__.py
+.idea
+.venv
+test.py
+__init__.py
