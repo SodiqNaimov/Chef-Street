@@ -134,3 +134,38 @@ def get_answer(message: Message, bot: TeleBot,user_language: str,  state: StateC
         bot.send_message(a_q[message.chat.id], answer_to_question[lang].format(message.text))
         bot.send_message(message.chat.id, 'Javobingiz yuborildi')
         header(message, bot, user_language, state)
+
+def order_func(message: Message, bot: TeleBot,user_language: str,  state: StateContext):
+    bot.send_message(message.from_user.id, order_type_text[user_language],  reply_markup=reply_markup(order_type_btn[user_language], 2))
+    state.set(MyStates.order_func_st)
+
+def pickup_func(message: Message, bot: TeleBot, user_language: str, state: StateContext):
+    state.add_data(order_type=message.text)
+    bot.send_message(message.from_user.id, location_text[user_language], reply_markup=pickup_branches_btn(user_language))
+    state.set(MyStates.pickup_func_st)
+
+def back_pickup_func(message: Message, bot: TeleBot, user_language: str, state: StateContext):
+    bot.send_message(message.from_user.id, order_type_text[user_language],  reply_markup=reply_markup(order_type_btn[user_language], 2))
+    state.set(MyStates.order_func_st)
+def menu_func(message: Message, bot: TeleBot, user_language: str, state: StateContext):
+    state.add_data(branch=message.text)
+    bot.send_message(message.from_user.id, category_text[user_language], reply_markup=get_categories(user_language))
+    state.set(MyStates.menu_func_st)
+
+def pickup_location(message: Message, bot: TeleBot, user_language: str, state: StateContext):
+    Latitude = message.location.latitude
+    Longitude = message.location.longitude
+    closest_location_name = find_closest_location((Latitude, Longitude), user_language)[0]
+    closest_location_km = find_closest_location((Latitude, Longitude), user_language)[1]
+    state.add_data(branch=closest_location_name)
+    bot.send_message(message.from_user.id,
+                     pickup_location_text[user_language].format(closest_location_name, round(closest_location_km)))
+    bot.send_message(message.from_user.id, category_text[user_language], reply_markup=get_categories(user_language))
+    state.set(MyStates.menu_func_st)
+
+def back_menu_func(message: Message, bot: TeleBot, user_language: str, state: StateContext):
+    db = SQLite()
+    db.delete_basket_data(message.from_user.id)
+    bot.send_message(message.from_user.id, order_type_text[user_language],
+                     reply_markup=reply_markup(order_type_btn[user_language], 2))
+    state.set(MyStates.order_func_st)
