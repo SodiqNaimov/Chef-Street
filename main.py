@@ -52,6 +52,18 @@ def register_handlers():
     register_m_handler(start_func, commands=['start'])
     register_m_handler(language, text=lang_msg, state=Register.lang_st)
     register_m_handler(get_full_name, state=Register.full_name_st)
+
+    #Order
+    register_m_handler(order_func, text = ["🛍 Buyurtma berish", "🛍 Заказать"], state=MyStates.headers_st)
+    register_m_handler(header, text = ["⬅️ Ortga", "⬅️ Назад", "⬅️ Back"], state=MyStates.order_func_st)
+    register_m_handler(pickup_func, text = ['🚶 Borib olish', '🚶 Самовывоз'], state=MyStates.order_func_st)
+    register_m_handler(back_pickup_func, text = ["⬅️ Ortga", "⬅️ Назад", "⬅️ Back"], state=MyStates.pickup_func_st)
+    register_m_handler(menu_func, text = ["📍 Chef Street Koloxoz","📍 Chef Street Колхоз"],
+                       state=MyStates.pickup_func_st)
+    bot.register_message_handler(pickup_location, state=MyStates.pickup_func_st, content_types=['location'],
+                                 pass_bot=True)
+    register_m_handler(back_menu_func, text=["⬅️ Ortga", "⬅️ Назад"], state=MyStates.menu_func_st)
+
     #Contact
     register_m_handler(contacts_func, text = ["📞️ Kontaktlar", "📞️ Контакты", "📞️ Contacts"], state=MyStates.headers_st)
     # social_media

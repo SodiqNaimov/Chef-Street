@@ -40,3 +40,11 @@ successful_send_text = {
 
 answer_to_question = {"uz": "Savolingizga javob berildi. Javob:\n<b>{}</b>",
                       "ru": "На ваш вопрос ответилию Ваш ответ: \n<b>{}</b>"}
+order_type_text = {"uz": "Buyurtmangizni mustaqil olib keting 🙋‍♂️ yoki yetkazish xizmatini tanlang 🚙",
+                   "ru": "Заберите свой заказ самостоятельно 🙋‍♂️ или выберите доставку 🚙"}
+location_text = {"uz": "Quyidagilardan filiallardan birini tanlang 👇🏻",
+                 "ru": "Выберите одно из филиалов ниже 👇🏻"}
+category_text = {"uz": "Kategoriyani tanlang 👇🏻",
+                 "ru": "Выберите категорию 👇🏻"}
+pickup_location_text = {"uz": "🏢 Sizga eng yaqin filial:\n<b>{}</b>\n🗺 Masofa: <b>{}</b> km",
+                        "ru": "🏢Ближайший к вам филиал: <b>{}</b>\n🗺 Расстояние: <b>{}</b> km"}

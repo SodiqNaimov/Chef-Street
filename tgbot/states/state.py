@@ -11,6 +11,9 @@ class MyStates(StatesGroup):
     change_language_st = State()
     complaint_branch_st = State()
     get_answer  = State()
+    order_func_st = State()
+    pickup_func_st = State()
+    menu_func_st = State()
 #For user's registration
 class Register(StatesGroup):
     lang_st = State()
