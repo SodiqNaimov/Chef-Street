@@ -5,3 +5,5 @@
 .venv
 test.py
 __init__.py
+tgbot/files/config.py
+
