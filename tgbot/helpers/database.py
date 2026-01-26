@@ -144,7 +144,60 @@ class SQLite:
         phone_number = user.phone_number if user and user.phone_number else None
 
         return full_name, phone_number
+    def get_product_names_by_category(
+            self,
+            category_id,
+            lang
+    ) :
+        """Get only product names for a specific category in the specified language.
 
+        Args:
+            session: SQLAlchemy session
+            category_id: ID of the category
+            lang: Language code ('uz' or 'ru')
+
+        Returns:
+            List of product names (empty list if no products found)
+        """
+        lang = lang.lower()
+        if lang not in ('uz', 'ru'):
+            lang = 'uz'  # Default to Uzbek
+
+        try:
+            # Select only the name column in the requested language
+            name_column = Product.name_uz if lang == 'uz' else Product.name_ru
+            names = self.session.query(name_column) \
+                .filter(Product.category_id == category_id) \
+                .all()
+
+            # Extract names from result tuples
+            return [name[0] for name in names if name[0]]
+
+        except Exception as e:
+            print(f"Error fetching product names: {e}")
+            return []
+    def get_category_id_by_name(self, name, lang):
+        """Get category ID by its name in specified language.
+
+        Args:
+            session: SQLAlchemy session
+            name: Category name to search for
+            lang: Language code ('uz', 'ru', or 'en')
+
+        Returns:
+            Category ID if found, None otherwise
+        """
+        lang = lang.lower()
+        if lang not in ('uz', 'ru', 'en'):
+            lang = 'uz'  # Default to Uzbek
+
+        try:
+            name_column = getattr(Category, f"name_{lang}")
+            category = self.session.query(Category.id).filter(name_column == name).first()
+            return category[0] if category else None
+        except (SQLAlchemyError, AttributeError) as e:
+            print(f"Error finding category: {e}")
+            return None
     def update_user(self, user_id, update_data):
         """
         Update user fields dynamically using a dictionary.
@@ -217,5 +270,116 @@ class SQLite:
             print(f"Error updating user {user_id}: {e}")  # Log the error
             return None  # Return None to indicate failure
 
+    def get_user_basket(self, user_id, lang):
+        """Get all items in user's basket using SQLAlchemy.
 
+        Args:
+            user_id: Telegram user ID
+
+        Returns:
+            List of tuples containing (product_name, count, price, total_price)
+            Empty list if basket is empty or user not found
+        """
+        session = self.session
+        print(lang)
+        try:
+            if lang == 'uz':
+                product_name_column = Basket.product_name_uz
+            else:
+                product_name_column = Basket.product_name_ru
+            print(product_name_column)
+            print(product_name_column.label("product_name"))
+            # Using SQLAlchemy Core style query
+            stmt = select(
+                product_name_column.label("product_name"),
+                Basket.count,
+                Basket.price,
+                Basket.total_price
+            ).where(
+                Basket.user_id == str(user_id)
+            )
+
+            result = session.execute(stmt).fetchall()
+            print(result)
+            return [
+                (row.product_name, row.count, row.price, row.total_price)
+                for row in result
+            ]
+
+        except SQLAlchemyError as e:
+            print(f"Error fetching basket items: {e}")
+            return []
+        finally:
+            session.close()
+    def get_products_by_name(self, name, lang):
+
+        if lang == "uz":
+            product = self.session.query(Product.name_uz, Product.price, Product.image, Product.id, Product.name_ru).filter(
+                Product.name_uz == name
+            ).first()
+        elif lang == "ru":
+            product = self.session.query(Product.name_ru, Product.price, Product.image, Product.id, Product.name_uz).filter(
+                Product.name_ru == name
+            ).first()
+        if product:
+            name = product[0]  # Имя продукта
+            price = "{:,.0f}".format(product[1]).replace(",", " ")  # Форматируем цену
+            image = product[2]  # Ссылка на изображение
+            id = product[3]
+            name_ru = product[4]
+            return name, price, image, id,name_ru
+        else:
+            return False
+    def get_product_by_id(self, product_id, lang):
+        if lang == "uz":
+            product = self.session.query(Product.name_uz, Product.price, Product.image, Product.id, Product.name_ru).filter(
+                Product.id == product_id
+            ).first()
+        elif lang == "ru":
+            product = self.session.query(Product.name_ru, Product.price, Product.image, Product.id, Product.name_uz).filter(
+                Product.id == product_id
+            ).first()
+
+        if product:
+            name = product[0]  # Product name in the selected language
+            price = "{:,.0f}".format(product[1]).replace(",", " ")  # Formatted price
+            print(price)
+            image = product[2]  # Image URL
+            product_id = product[3]  # Product ID
+            name_ru = product[4]
+            return {
+                'name': name,
+                'price': price,
+                'image': image,
+                'id': product_id,
+                'name_ru': name_ru
+
+
+            }
+        else:
+            return None
+    def insert_basket(self, user_id, product_name_uz,count, price, total_price, product_name_ru):
+        basket = Basket(
+            user_id=user_id,
+            product_name_uz=product_name_uz,
+            product_name_ru=product_name_ru,
+
+            count=count,
+            price=price,
+            total_price=total_price
+        )
+        self.session.add(basket)
+        self.session.commit()
+    def update_basket_item(self, user_id, product_name,
+                           count, total_price, lang):
+        if lang == 'uz':
+            product_name_column = Basket.product_name_uz
+        else:
+            product_name_column = Basket.product_name_ru
+        self.session.execute(
+            update(Basket)
+            .where(and_(Basket.user_id == user_id, product_name_column.label("product_name") == product_name))
+            .values(count=count, total_price=total_price)
+        )
+        self.session.commit()
 # SQLite()

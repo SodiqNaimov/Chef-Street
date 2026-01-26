@@ -48,3 +48,51 @@ category_text = {"uz": "Kategoriyani tanlang 👇🏻",
                  "ru": "Выберите категорию 👇🏻"}
 pickup_location_text = {"uz": "🏢 Sizga eng yaqin filial:\n<b>{}</b>\n🗺 Masofa: <b>{}</b> km",
                         "ru": "🏢Ближайший к вам филиал: <b>{}</b>\n🗺 Расстояние: <b>{}</b> km"}
+choose_one_from_products = {"uz": "Mahsulotlardan birini tanlng 👇🏻",
+                            "ru": "Выбирайте один из товаров 👇🏻"}
+please_choose_one = {"uz": "<b>Iltimos faqat pastdagi tugmalardan birini tanlang!</b>",
+                     "ru": "<b>Пожалуйста,  выберите только одну из кнопок ниже!</b>"}
+basket_dont_exists = {"uz": "Sizning savatingiz bo'sh 😔 Keling, uni toʻldiramiz 📥 ",
+                      "ru": "Ваша корзина ещё пуста 😔Давайте наполним её 📥"}
+
+basket_count_message = {'uz': "<b>🛒 Sizning Savatingiz:</b>\n\n{}🚕 Yetkazib berish: <b>{} so'm</b>\n\nJami: <b>{} so'm</b>",
+                        'ru': "<b>🛒 Ваша Корзина:</b>\n\n{}🚕 Доставка: <b>{} cум</b>\n\nИтого:<b> {} сум</b>",
+                        'en':"<b> 🛒 Your Shopping Cart:</b>\n\n{}Total:<b> {} sum</b>"}
+basket_pickup_count_message = {'uz': "<b>🛒 Sizning Savatingiz:</b>\n\n{}Jami: <b>{} so'm</b>",
+                        'ru': "<b>🛒 Ваша Корзина:</b>\n\n{}Итого:<b> {} сум</b>",
+                        'en':"<b> 🛒 Your Shopping Cart:</b>\n\n{}Total:<b> {} sum</b>"}
+
+basket_count_pickup_message = {'uz': "<b>🛒 Sizning Savatingiz:</b>\n\n{}Jami: <b>{} so'm</b>",
+                        'ru': "<b>🛒 Ваша Корзина:</b>\n\n{}Итого:<b> {} сум</b>",
+                        'en':"<b> 🛒 Your Shopping Cart:</b>\n\n{}Total:<b> {} sum</b>"}
+basket_deleted_text = {"uz": "Sizning savatingiz bo'shatildi 🗑",
+                       "ru": "Ваша корзина пуста 🗑"}
+
+header_txt = {"uz": """Quyidagilardan birini tanlang""",
+              "ru": """Выберите одно из следующих"""}
+product_info_txt = {"uz": "<b>{}</b>\n\nNarxi: <b>{} so'm</b>\n\n{} x {} = {} so'm",
+                    "ru": "<b>{}</b>\n\nЦена: <b>{} cум</b>\n\n{} x {} = {} cум"}
+info_about_set_basket = {"uz": "<b>{}</b> mahsulotidan <b>{}</b> ta savatga qo'shildi",
+                         "ru": "Товар <b>{}</b> добавлена в корзина <b>{} </b> из продукта",
+                         "en": "Product <b>{}</b> added to cart <b>{}</b> from product"}
+enter_number_txt = {'uz': "Buyurtma sonini kiriting:",
+                    "ru": "Введите количество заказа:"}
+
+please_in_int_enter = {"uz": "Iltimos kiritmoqchi bo'lgan soningizni faqat raqamlarda kirting!",
+                       "ru": "Пожалуйста, введите номер, который вы хотите ввести, только цифрами!"}
+send_contact = {"uz": "Telefon raqamingizni +998********* shaklida kiriting yoki «📞 Raqamni Jo'natish» tugmasini bosing:",
+                "ru": "Введите свой номер телефона в форме +998********* или нажмите кнопку «📞 Отправка Номера»:"}
+
+comment_txt = {"uz": "💬 Buyurtmangiz uchun izohingiz bo'lsa yozib qoldiring yoki ➡️ Keyingi tugmasini bosing:",
+               "ru": "💬 Если у вас есть комментарий к вашему заказу, оставьте его или нажмите кнопку ➡️ Далее:"}
+contact_int = {"uz": "<b>Iltimos telefon nomeringizni faqat raqamlarda yuboring!</b>",
+               "ru": "<b>Пожалуйста, отправляйте номер телефона только по цифрам!</b>"}
+
+please_only_uzb_number = {"uz": "Iltimos faqatgina O'zbekiston raqami orqali ro'yxatdan o'ting!\nMasalan +998xxxxxxxxx",
+                          "ru": "Пожалуйста, регистрируйтесь только по номеру Узбекистана!\nНапример, +998xxxxxxxxx"}
+
+payment_type_txt = {'uz': "To'lov turini tanlang 👇",
+                    'ru': "Выберите способ оплаты 👇"}
+
+last_confirm = {"uz": "Buyurtmangizni tasdiqlaysizmi?",
+                "ru": "Вы подтверждаете ваш заказ?"}

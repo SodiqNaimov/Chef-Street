@@ -63,6 +63,30 @@ def register_handlers():
     bot.register_message_handler(pickup_location, state=MyStates.pickup_func_st, content_types=['location'],
                                  pass_bot=True)
     register_m_handler(back_menu_func, text=["⬅️ Ortga", "⬅️ Назад"], state=MyStates.menu_func_st)
+    register_m_handler(basket_function, text=["🛒 Savat", "🛒 Корзина"], state=MyStates.menu_func_st)
+    register_m_handler(back_basket_function,text=["⬅️ Ortga", "⬅️ Назад"], state=MyStates.basket_user_st)
+    #Product
+    register_m_handler(products_user, state=MyStates.menu_func_st)
+    register_m_handler(delete_basket, text=["♻️ Savatni tozalash", '♻️ Очистить корзину'],
+                       state=MyStates.basket_user_st)
+    register_m_handler(confirm_order, text=["✅ Buyurtmani tasdiqlash", '✅ Подтвердить заказ'], state=MyStates.basket_user_st)
+    register_m_handler(back_confirm_order, text=["⬅️ Ortga", "⬅️ Назад"], state= MyStates.confirm_order_st)
+    bot.register_message_handler(handle_contacts_update,content_types=['contact'], state= MyStates.confirm_order_st,pass_bot=True)
+    register_m_handler(handle_text_message, state= MyStates.confirm_order_st)
+    register_m_handler(comments_txt, state= MyStates.comments_st)
+    register_m_handler(back_payment,text=["⬅️ Ortga", "⬅️ Назад"], state=MyStates.payment_type_st)
+
+    register_m_handler(payment_cash, text=['💵 Naqd', '💵 Наличные'], state=MyStates.payment_type_st)
+
+    register_m_handler(back_products_user,text=["⬅️ Ortga", "⬅️ Назад"], state=MyStates.products_menu_st)
+    register_m_handler(product_basket, text=["🛒 Savat", "🛒 Корзина"], state=MyStates.products_menu_st)
+
+    register_m_handler(show_product, state=MyStates.products_menu_st)
+
+
+    #Enter count
+    register_m_handler(back_enter_number_by_handle, text=["⬅️ Ortga", "⬅️ Назад"], state=MyStates.enter_number_by_handle_st)
+    register_m_handler(add_enter_number, state=MyStates.enter_number_by_handle_st)
 
     #Contact
     register_m_handler(contacts_func, text = ["📞️ Kontaktlar", "📞️ Контакты", "📞️ Contacts"], state=MyStates.headers_st)
@@ -89,7 +113,15 @@ def register_handlers():
     register_m_handler(open_admin, commands=['admin'])
     register_m_handler(get_answer, state=MyStates.get_answer)
 
-
+    #Callback
+    bot.register_callback_query_handler(back_products_info, func=lambda call: call.data == "back_basket", pass_bot=True)
+    bot.register_callback_query_handler(
+        add_or_minus_product,
+        func=lambda call: call.data in ('minus_product', 'add_product'),
+        pass_bot=True
+    )
+    bot.register_callback_query_handler(save, func=lambda call: call.data.startswith("save_"), pass_bot=True)
+    bot.register_callback_query_handler(enter_number_by_handle, func=lambda call: call.data.startswith("entern_"), pass_bot=True)
 def run():
     bot.infinity_polling(skip_pending=True, logger_level=logging.INFO)
 

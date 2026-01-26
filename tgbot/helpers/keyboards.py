@@ -46,3 +46,53 @@ def get_categories(lang):
     markup.add(*categories_list)
     return markup
 
+def get_products_btn(lang, category_id):
+    db = SQLite()
+    # category = db.get_category_choosed(lang, category_name)
+    products = db.get_product_names_by_category(category_id, lang)
+    markup = ReplyKeyboardMarkup(resize_keyboard=True, row_width=2)
+    markup.add(*back_btn[lang], *basket_btn_sub[lang])
+
+    products_list = []
+    for i in products:
+        products_list.append(i)
+    markup.add(*products_list)
+    return markup
+
+def get_basket_user_data(lang, user_id):
+    markup = ReplyKeyboardMarkup(resize_keyboard=True, one_time_keyboard=True, row_width=2)
+    markup.add(*basket_user_button[lang])
+    db = SQLite()
+    p_name = db.get_user_basket(user_id, lang)
+    # print(p_name)
+
+    sub_category_list = []
+    for i in p_name:
+        # print(i)
+        if i[0] not in sub_category_list:
+            sub_category_list.append('✏' + ' ' + i[0])
+    markup.add(*sub_category_list, row_width=2)
+    return markup
+def change_basket_count(lang, name, tanlaganda):
+    markup = InlineKeyboardMarkup()
+
+    button_text = f"{tanlaganda}"
+    button = InlineKeyboardButton(text=button_text, callback_data=str(name) + '_firs')
+
+    button1 = InlineKeyboardButton(text='➖', callback_data='minus_product')
+    button2 = InlineKeyboardButton(text='➕', callback_data='add_product')
+    button3 = InlineKeyboardButton(text=back_inline_btn[lang], callback_data='back_basket')
+    button5 = InlineKeyboardButton(text=inline_button_save[lang], callback_data=f'save_{tanlaganda}' + f'_{str(name)}')
+    button6 = InlineKeyboardButton(text=enter_number[lang], callback_data=f'entern_{str(name)}')
+
+    markup.add(button3)
+    markup.add(button1, button, button2)
+    markup.add(button6)
+    markup.add(button5)
+    return markup
+def reply_phone_number(lang):
+    markup = ReplyKeyboardMarkup(resize_keyboard=True, one_time_keyboard=True)
+    markup.add(*back_btn[lang])
+    contact_button = KeyboardButton(text=get_contact_btn[lang], request_contact=True)
+    markup.add(contact_button)
+    return markup

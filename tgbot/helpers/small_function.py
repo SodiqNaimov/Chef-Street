@@ -9,6 +9,12 @@ from telebot import TeleBot
 from geopy.distance import geodesic
 # import pytz
 # from datetime import datetime
+from telebot import TeleBot
+from telebot.states.sync import StateContext
+from telebot.types import Message
+from datetime import datetime, time
+from zoneinfo import ZoneInfo  # Python 3.9+
+
 
 # For getting lang
 set_user_lang = lambda text: 'ru' if text == lang_msg[1] else 'uz' if text == lang_msg[0] else None
@@ -106,3 +112,99 @@ def find_closest_location(user_location, lang):
         return location_name, formatted_distance
 
     return None, None
+
+def check(rows, lang, distance):
+    text = ''
+    num = 1
+    distance = float(distance)
+
+    for i in rows:
+        name = i[0]
+        count = i[1]
+        price = i[2]
+        print(price)
+        print(name)
+        print(count)
+        all_cost = int(price) * int(i[1])
+        formatted_number = "{:,.0f}".format(price).replace(",", " ")
+        formatted_number1 = "{:,.0f}".format(all_cost).replace(",", " ")
+
+        text += (f"{num}) <b>{name}</b>\n"
+                 f"{count} x <b>{formatted_number}</b><b> {sum_pul[lang]}</b> = "
+                 f"<b>{formatted_number1}</b><b> {sum_pul[lang]}</b>\n\n")
+        num += 1
+
+    overall_cost = sum(int(j[3]) for j in rows)
+
+    # Delivery cost calculation
+    # 🚚 Delivery narxi
+    if 0 <= distance <= 4:
+        delivery_cost = 15000
+    elif distance <= 7:
+        delivery_cost = 20000
+    elif distance <= 80:
+        delivery_cost = 30000
+    else:
+        delivery_cost = 30000  # agar 80 dan oshsa ham
+    # else:
+    #     delivery_cost = 12000 + math.ceil(distance - 3) * 1500
+
+    formatted_number3 = "{:,.0f}".format(delivery_cost).replace(",", " ")
+    total_cost = overall_cost + delivery_cost
+    formatted_number2 = "{:,.0f}".format(total_cost).replace(",", " ")
+
+    return text, formatted_number2, formatted_number3
+
+def check_pickup(rows, lang):
+    text = ''
+    num = 1
+
+    for i in rows:
+        name = i[0]
+        count = i[1]
+        price = i[2]
+        print(price)
+        print(name)
+        print(count)
+        all_cost = int(price) * int(i[1])
+        formatted_number = "{:,.0f}".format(price).replace(",", " ")
+        formatted_number1 = "{:,.0f}".format(all_cost).replace(",", " ")
+
+        text += (f"{num}) <b>{name}</b>\n"
+                 f"{count} x <b>{formatted_number}</b><b> {sum_pul[lang]}</b> = "
+                 f"<b>{formatted_number1}</b><b> {sum_pul[lang]}</b>\n\n")
+        num += 1
+
+    overall_cost = sum(int(j[3]) for j in rows)
+
+
+
+    total_cost = overall_cost
+    formatted_number2 = "{:,.0f}".format(total_cost).replace(",", " ")
+
+    return text, formatted_number2
+def only_between_11_and_00(func):
+    def wrapper(message: Message, bot:TeleBot, state: StateContext, user_language:str):
+        now = datetime.now(ZoneInfo("Asia/Tashkent")).time()
+        start = time(9, 0)
+        end = time(2,0)
+        closed_work = {"uz": "❗️ Yetkazib berish xizmatimiz soat 11:00 dan 01:00gacha ishlaydi!",
+                       "ru"  : "❗️Наша служба доставки работает с 11:00 до 01:00!"}
+        if start <= now or now <= end:
+            return func(message, bot,user_language, state)
+        else:
+            bot.send_message(message.from_user.id, closed_work[user_language])
+    return wrapper
+
+def only_between_11_and_00_simple(func):
+    def wrapper(message: Message, bot:TeleBot, state: StateContext, user_language:str):
+        now = datetime.now(ZoneInfo("Asia/Tashkent")).time()
+        start = time(9, 0)
+        end = time(2,0)
+        closed_work = {"uz": "❗️ Yetkazib berish xizmatimiz soat 11:00 dan 01:00gacha ishlaydi!",
+                       "ru"  : "❗️Наша служба доставки работает с 11:00 до 01:00!"}
+        if start <= now or now <= end:
+            return func(message, bot, state)
+        else:
+            bot.send_message(message.from_user.id, closed_work[user_language])
+    return wrapper
