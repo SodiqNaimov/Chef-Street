@@ -96,3 +96,33 @@ payment_type_txt = {'uz': "To'lov turini tanlang 👇",
 
 last_confirm = {"uz": "Buyurtmangizni tasdiqlaysizmi?",
                 "ru": "Вы подтверждаете ваш заказ?"}
+final_message = {
+    'uz': "<b>Sizning buyurtmangiz</b>!\n🆔<b>{}</b>\n📞 Telefon: {}\n📍 Manzil:{}\n\n{}🚕 Yetkazib berish: <b>{} so'm</b>\n\n<b>Jami: {} so'm</b>\n\n📅 Sana: <b>{}</b>\n🕔 Vaqt: <b>{}</b>\n💬 Kommentariya: {}",
+    'ru': "<b>Ваш заказ</b>!\n🆔<b>{}</b>\n📞 Телефон: {}\n📍 Адрес: {}\n\n {}\n\n🚕 Доставка: <b>{} cум</b>\n\n<b>Итого</b>: <b>{} сум</b>\n\n📅 Дата: <b>{}</b>\n🕔 Время: <b>{}</b>\n💬 Комментарий: {}",
+    'en': "<b>your order< / b>!\n{} <b>Overall: {} so'm</b >\n\n<b>Payment type: {} </b> \n\n 😄 is a great choice! Our operator will contact you in the near future."}
+final_message_pickup = {
+    'uz': "<b>Sizning buyurtmangiz</b>!\n🆔<b>{}</b>\n📞 Telefon: {}\n📍 Manzil:{}\n\n{}🚶 Olib ketish\n\n<b>Jami: {} so'm</b>\n\n📅 Sana: <b>{}</b>\n🕔 Vaqt: <b>{}</b>\n💬 Kommentariya: {}\n💰 To'lov turi: {}",
+    'ru': "<b>Ваш заказ</b>!\n🆔<b>{}</b>\n📞 Телефон: {}\n📍 Адрес: {}\n\n {}\n\n🚶 Самовывоз\n\n<b>Итого</b>: <b>{} сум</b>\n\n📅 Дата: <b>{}</b>\n🕔 Время: <b>{}</b>\n💬 Комментарий: {}\n💰 Способ оплаты: {}",
+    'en': "<b>your order< / b>!\n{} <b>Overall: {} so'm</b >\n\n<b>Payment type: {} </b> \n\n 😄 is a great choice! Our operator will contact you in the near future."}
+group_txt = (
+    "<b>Yangi buyurtma!</b>\n\n"
+    "🧾 <b>Buyurtma raqami:</b> #{}\n\n"  # placeholder 1
+    "{}🚕 Yetkazib berish: <b>{} so'm</b>\n\n"  # placeholders 2, 3
+    "<b>Jami:</b> {} <b>so'm</b>\n\n"
+    "💰 To'lov turi: {}"
+    "{}\n\n"# placeholder 4
+    "💬 Kommentariya: {}\n\n"  # placeholder 5
+    "📭 <b>Telegram account:</b> {}\n"# placeholder 6
+
+)
+group_pickup_txt = (
+    "<b>Yangi buyurtma!</b>\n\n"
+    "🧾 <b>Buyurtma raqami:</b> #{}\n\n"  # placeholder 1
+    "{}🚕 Yetkazib berish: <b>{} so'm</b>\n\n"  # placeholders 2, 3
+    "<b>Jami:</b> {} <b>so'm</b>\n\n"
+    "<b>💰 To'lov turi: {}</b>\n\n"
+    "{}\n\n"  # placeholder 4
+    "💬 Kommentariya: {}\n\n"  # placeholder 5
+    "📭 <b>Telegram account:</b> {}\n"  # placeholder 6
+
+)

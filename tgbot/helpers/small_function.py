@@ -1,6 +1,7 @@
 from typing import Optional
 
 import aiohttp
+import pytz
 import requests
 
 from tgbot.helpers.database import SQLite
@@ -208,3 +209,51 @@ def only_between_11_and_00_simple(func):
         else:
             bot.send_message(message.from_user.id, closed_work[user_language])
     return wrapper
+
+def date_and_time():
+    # Get the current UTC time
+    utc_now = datetime.utcnow()
+
+    # Define the time zone for Uzbekistan
+    uzbekistan_timezone = pytz.timezone('Asia/Tashkent')
+
+    # Localize the current time to Uzbekistan time zone
+    local_time = pytz.utc.localize(utc_now).astimezone(uzbekistan_timezone)
+
+    formatted_date = local_time.strftime("%Y-%m-%d")
+    formatted_time = local_time.strftime("%H:%M")
+    return formatted_date, formatted_time
+
+def location_without_emoji(row):
+    if row in ["📍 Chef Street Koloxoz","📍 Chef Street Колхоз"]:
+        return "Chef Street Koloxoz"
+def total_cost(rows, lang, distance):
+    text = ''
+    num = 1
+
+    for i in rows:
+        name = i[0]
+        count = i[1]
+        price = i[2]
+
+        all_cost = int(price) * int(i[1])
+        formatted_number = "{:,.0f}".format(price).replace(",", " ")
+        formatted_number1 = "{:,.0f}".format(all_cost).replace(",", " ")
+
+        text += (f"{num}) <b>{name}</b>\n"
+                 f"{count} x <b>{formatted_number}</b><b> {sum_pul[lang]}</b> = "
+                 f"<b>{formatted_number1}</b><b> {sum_pul[lang]}</b>\n\n")
+        num += 1
+
+    overall_cost = sum(int(j[3]) for j in rows)
+
+    # Delivery cost calculation
+
+    return overall_cost
+def payment_to_txt(payment):
+    if payment in ['💵 Naqd', '💵 Наличные']:
+        return 'Naqd'
+    elif payment in ['💳 Click']:
+        return 'Click'
+    elif payment in ['💳 Payme']:
+        return 'Payme'

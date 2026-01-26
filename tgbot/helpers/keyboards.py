@@ -96,3 +96,8 @@ def reply_phone_number(lang):
     contact_button = KeyboardButton(text=get_contact_btn[lang], request_contact=True)
     markup.add(contact_button)
     return markup
+def pickup_orders_btn(message, order_number):
+    markup = InlineKeyboardMarkup(row_width=1)
+    # _tasdiqlash
+    markup.add(InlineKeyboardButton(text="✅ Buyurtmani qabul qilish", callback_data=f"tasdiqlash_{message.chat.id}_{order_number}"))
+    return markup

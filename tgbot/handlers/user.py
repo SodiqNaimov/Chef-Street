@@ -498,3 +498,80 @@ def back_payment(message: Message, bot: TeleBot, state: StateContext, user_langu
     bot.send_message(message.from_user.id, comment_txt[user_language],
                      reply_markup=reply_markup(comment_btn[user_language], 1))
     state.set(MyStates.comments_st)
+
+def cancel_order(message: Message, bot: TeleBot, state: StateContext, user_language: str):
+    bot.send_message(message.from_user.id, payment_type_txt[user_language],
+                     reply_markup=reply_markup(payment_types[user_language], 2))
+    state.set(MyStates.payment_type_st)
+
+def accept_order(message: Message, bot: TeleBot, state: StateContext, user_language: str):
+    Latitude = return_data(message, bot, 'latitude')
+    Longitude = return_data(message, bot, 'longitude')
+    comments = return_data(message, bot, 'comments')
+    branch = return_data(message, bot, 'branch')
+    payment = return_data(message, bot, 'payment')
+
+
+    db = SQLite()
+    rows = db.get_user_basket(message.from_user.id, user_language)
+    dates, timess = date_and_time()
+    branch_d = location_without_emoji(branch)
+    order_number = db.get_order_number()
+    print(order_number)
+    # if order_number:
+    #     order_number = order_number + 1
+    # else:
+    #     order_number = 1
+    # print(order_number)
+    silka = mention_or_silka(message)
+
+
+    order_type = return_data(message, bot, 'order_type')
+    if order_type in ['🚶 Borib olish', '🚶 Самовывоз']:
+        text, formatted_number2 = check_pickup(rows, user_language)
+        adrdress_phone = '📱 Telefon nomer: ' + str(
+            return_data(message, bot, 'phone_number'))
+
+        groups_txt = group_pickup_txt.format(order_number, text, formatted_number2,payment, adrdress_phone,
+                         comments, silka)
+    else:
+        distance = return_data(message, bot, 'closest_km')
+
+        bot.send_location(-1003871440267, Latitude,
+                          Longitude)
+        yax = return_data(message, bot, 'closest_km')
+        bot.send_message(-1003871440267, f"🗣 Fillialdan klientgacha bo'lgan <b>masofa 📍 {yax} km</b>")
+        adrdress_phone = "📍Address: " + str(return_data(message, bot, 'location')) + '\n' + '📱 Telefon nomer: ' + str(
+            return_data(message, bot, 'phone_number'))
+
+        text, formatted_number2, formatted_number3 = check(rows, user_language, distance)
+        s = total_cost(rows, user_language, distance)
+        adding_st = db.get_user_basket(message.from_user.id, 'uz')
+        final = final_message[user_language].format(
+            order_number,  # This is for 🆔
+            return_data(message, bot, 'phone_number'),  # Phone
+            return_data(message, bot, 'location'),  # Location
+            text,  # Some additional text
+            formatted_number3,  # Delivery cost
+            formatted_number2,  # Total cost
+            dates,  # Date
+            timess,  # Time
+            comments  # Comments
+        )
+        groups_txt = group_txt.format(order_number, text, formatted_number3, formatted_number2, adrdress_phone,
+                         comments, silka)
+    markup = pickup_orders_btn(message, order_number)
+    # db.register_addresses(return_data(message, bot, 'phone_number'),    return_data(message, bot, 'location'), Longitude, Latitude)
+
+
+    bot.send_message(-1003871440267,groups_txt)
+    m = bot.send_message(-1003871440267,
+                     groups_txt,
+                     reply_markup=markup)
+    db.add_order(branch_d, order_number, "🤖 Telegram bot", "Jarayonda", payment_to_txt(payment),s, formatted_number3, timess, dates, m.message_id, comments, str(return_data(message, bot, 'location')), Longitude, Latitude, str(return_data(message, bot, 'phone_number')), yax, formatted_number2)
+    bot.send_message(message.from_user.id,
+                     final, reply_markup=reply_headers(user_language))
+    db.update_user_phone(message.from_user.id,  str(return_data(message, bot, 'phone_number')))
+    db.delete_basket_data(message.chat.id)
+    state.delete()
+    state.set(MyStates.headers_st)

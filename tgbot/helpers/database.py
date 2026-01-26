@@ -1,5 +1,5 @@
 import sqlalchemy
-from sqlalchemy import create_engine,DateTime, Column, String, Integer, CHAR, TEXT, ForeignKey, select, and_, update, Float, Text,BOOLEAN
+from sqlalchemy import create_engine,DateTime, Column, String, Integer, CHAR, TEXT, ForeignKey, select, and_, update, Float, Text,BOOLEAN,TIME,Date,text
 from sqlalchemy.exc import SQLAlchemyError
 from sqlalchemy.orm import sessionmaker, DeclarativeBase, Mapped, mapped_column, relationship, Session
 import sqlite3
@@ -11,7 +11,7 @@ from sqlalchemy.sql import func
 # database = sqlite3.connect(db_path)
 # cursor = database.cursor()
 engine = create_engine(f"sqlite:///{db_path}", echo=True)
-
+import datetime
 
 class Base(DeclarativeBase):
     pass
@@ -90,7 +90,35 @@ class Basket(Base):
     count: Mapped[int] = mapped_column(nullable=True)
     price: Mapped[int] = mapped_column(nullable=True)
     total_price: Mapped[float] = mapped_column(nullable=True)
+class Order(Base):
+    __tablename__ = 'orders'
 
+    id: Mapped[int] = mapped_column(primary_key=True, autoincrement=True)
+    branch_name : Mapped[str] = mapped_column(TEXT, nullable=True)
+    order_number: Mapped[int] = mapped_column(nullable=False)
+    get_order_from: Mapped[str]
+    status: Mapped[str] = mapped_column(nullable=True)
+    courier: Mapped[str] = mapped_column(nullable=True)
+    payment_type: Mapped[str] = mapped_column(nullable=False)
+    product_cost: Mapped[int]
+    delivery_cost: Mapped[int]
+    total_cost: Mapped[int]
+    date: Mapped[Date] = mapped_column(DateTime, nullable=True)  # Date only (no time)
+    ordered: Mapped[TIME] = mapped_column(TIME, nullable=False)
+    cooked: Mapped[TIME] = mapped_column(TIME, nullable=True)
+    delivered: Mapped[TIME] = mapped_column(TIME, nullable=True)
+    created_at: Mapped[DateTime] = mapped_column(DateTime, default=func.now(), nullable=True)
+    m_id: Mapped[str] = mapped_column(nullable=True)
+    comment: Mapped[str] = mapped_column(TEXT, nullable=True)
+    address: Mapped[str]= mapped_column(TEXT, nullable=True)
+    long: Mapped[str] = mapped_column(nullable=True)
+    lang: Mapped[str] = mapped_column(nullable=True)
+    phone_number: Mapped[str] =  mapped_column(String(15), nullable=True)
+    distance: Mapped[float] = mapped_column(nullable=True)
+    items = relationship("OrderItem", back_populates="order", cascade="all, delete-orphan")
+
+    def __repr__(self):
+        return f"<Order(id={self.id}, branch='{self.branch_name}', number={self.order_number})>"
 class SQLite:
     def __init__(self):
         self.engine = create_engine(f"sqlite:///{db_path}", echo=True)
@@ -115,6 +143,14 @@ class SQLite:
         if active_only:
             query = self.session.query(Locations.name_uzb, Locations.name_rus, Locations.lat, Locations.lon).filter(Locations.is_active == True).all()
         return query
+    def update_user_phone(self, user_id, phone):
+        """Updates the text field by order_number"""
+        processing = self.session.query(User).filter_by(user_id=user_id).first()
+        if processing:
+            processing.phone_number = phone
+            self.session.commit()
+            return True
+        return False
     def get_categories(self, lang):
         """Get product categories in specified language.
 
@@ -136,7 +172,22 @@ class SQLite:
         except SQLAlchemyError as e:
             print(f"Error fetching categories: {e}")
             return []
+    def get_order_number(self):
+        """Atomically get the next order number to prevent duplicates."""
+        # Start a transaction and lock the database for writing
+        self.session.execute(text("BEGIN IMMEDIATE"))
 
+        # Get the current max
+        result = self.session.execute(
+            text("SELECT MAX(order_number) FROM orders")
+        ).scalar()
+
+        next_number = (result or 0) + 1
+
+        # Commit to release the lock
+        self.session.commit()
+
+        return next_number
     def get_user_info(self, user_id: int):
         user = self.session.query(User).filter(User.user_id == str(user_id)).first()
 
@@ -176,6 +227,9 @@ class SQLite:
         except Exception as e:
             print(f"Error fetching product names: {e}")
             return []
+    def get_order_number_total_cost(self, order_number):
+        courier = self.session.query(Order.total_cost, Order.product_cost).filter_by(order_number=order_number).first()
+        return courier
     def get_category_id_by_name(self, name, lang):
         """Get category ID by its name in specified language.
 
@@ -311,6 +365,34 @@ class SQLite:
             return []
         finally:
             session.close()
+    def add_order(self,branch_name, order_number, get_order_from, status, payment_type, product_cost, delivery_cost, ordered_time, order_date, m_id, comment, address, long, lang, phone_number, distance, total_cost):
+        date_obj = datetime.strptime(order_date, '%Y-%m-%d').date()
+
+        # Convert time string to time object
+        time_obj = datetime.strptime(ordered_time, '%H:%M').time()
+        clean_product_cost = int(total_cost.replace(' ', ''))
+        clean_delivery_cost = int(delivery_cost.replace(' ', ''))
+        orders = Order(
+            branch_name=branch_name,
+            order_number=order_number,
+            get_order_from=get_order_from,
+            status = status,
+            payment_type=payment_type,
+            product_cost=product_cost,
+            delivery_cost = clean_delivery_cost,
+            ordered=time_obj,  # Combine date and time
+            date=date_obj,
+            m_id=m_id,
+            comment = comment,
+            address=address,
+            long=long,
+            lang=lang,
+            phone_number = phone_number,
+            distance=distance,
+            total_cost = clean_product_cost
+        )
+        self.session.add(orders)
+        self.session.commit()
     def get_products_by_name(self, name, lang):
 
         if lang == "uz":
@@ -370,6 +452,10 @@ class SQLite:
         )
         self.session.add(basket)
         self.session.commit()
+    def get_order_number_total_cost(self, order_number):
+        courier = self.session.query(Order.total_cost, Order.product_cost).filter_by(order_number=order_number).first()
+        return courier
+
     def update_basket_item(self, user_id, product_name,
                            count, total_price, lang):
         if lang == 'uz':

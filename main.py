@@ -78,6 +78,11 @@ def register_handlers():
 
     register_m_handler(payment_cash, text=['💵 Naqd', '💵 Наличные'], state=MyStates.payment_type_st)
 
+    register_m_handler(cancel_order, text=["❌ Rad etish", "❌ Отклонить"], state=MyStates.confirm_last_st)
+    register_m_handler(accept_order, text=["✅ Tasdiqlash", "✅ Подтвердить"], state=MyStates.confirm_last_st)
+
+
+
     register_m_handler(back_products_user,text=["⬅️ Ortga", "⬅️ Назад"], state=MyStates.products_menu_st)
     register_m_handler(product_basket, text=["🛒 Savat", "🛒 Корзина"], state=MyStates.products_menu_st)
 
