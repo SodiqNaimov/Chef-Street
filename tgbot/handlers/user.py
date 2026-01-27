@@ -527,6 +527,8 @@ def accept_order(message: Message, bot: TeleBot, state: StateContext, user_langu
 
 
     order_type = return_data(message, bot, 'order_type')
+    s = total_cost(rows, user_language)
+
     if order_type in ['🚶 Borib olish', '🚶 Самовывоз']:
         text, formatted_number2 = check_pickup(rows, user_language)
         adrdress_phone = '📱 Telefon nomer: ' + str(
@@ -534,6 +536,17 @@ def accept_order(message: Message, bot: TeleBot, state: StateContext, user_langu
 
         groups_txt = group_pickup_txt.format(order_number, text, formatted_number2,payment, adrdress_phone,
                          comments, silka)
+        final = final_message_pickup[user_language].format(
+            order_number,  # 🆔
+            text or "",  # 🧾 buyurtmalar
+            formatted_number2,  # 💰 jami
+            return_data(message, bot, 'phone_number'),  # 📞
+            dates,  # 📅 sana
+            timess,  # 🕔 vaqt
+            comments or "-",  # 💬 komment
+            payment_to_txt(payment) or "-"  # 💰 to‘lov turi
+        )
+
     else:
         distance = return_data(message, bot, 'closest_km')
 
@@ -545,7 +558,6 @@ def accept_order(message: Message, bot: TeleBot, state: StateContext, user_langu
             return_data(message, bot, 'phone_number'))
 
         text, formatted_number2, formatted_number3 = check(rows, user_language, distance)
-        s = total_cost(rows, user_language, distance)
         adding_st = db.get_user_basket(message.from_user.id, 'uz')
         final = final_message[user_language].format(
             order_number,  # This is for 🆔
@@ -560,18 +572,218 @@ def accept_order(message: Message, bot: TeleBot, state: StateContext, user_langu
         )
         groups_txt = group_txt.format(order_number, text, formatted_number3, formatted_number2, adrdress_phone,
                          comments, silka)
+        markup = pickup_orders_btn(message, order_number)
+
+        m = bot.send_message(-1003871440267,
+                             groups_txt,
+                             reply_markup=markup)
+        db.add_order(branch_d, order_number, "🤖 Telegram bot", "Jarayonda", payment_to_txt(payment), s,
+                     formatted_number3, timess, dates, m.message_id, comments,
+                     str(return_data(message, bot, 'location')), Longitude, Latitude,
+                     str(return_data(message, bot, 'phone_number')), yax, formatted_number2)
+
     markup = pickup_orders_btn(message, order_number)
     # db.register_addresses(return_data(message, bot, 'phone_number'),    return_data(message, bot, 'location'), Longitude, Latitude)
 
+    bot.send_message(-1003871440267,
+                         groups_txt,
+                         reply_markup=markup)
 
-    bot.send_message(-1003871440267,groups_txt)
-    m = bot.send_message(-1003871440267,
-                     groups_txt,
-                     reply_markup=markup)
-    db.add_order(branch_d, order_number, "🤖 Telegram bot", "Jarayonda", payment_to_txt(payment),s, formatted_number3, timess, dates, m.message_id, comments, str(return_data(message, bot, 'location')), Longitude, Latitude, str(return_data(message, bot, 'phone_number')), yax, formatted_number2)
     bot.send_message(message.from_user.id,
                      final, reply_markup=reply_headers(user_language))
     db.update_user_phone(message.from_user.id,  str(return_data(message, bot, 'phone_number')))
     db.delete_basket_data(message.chat.id)
     state.delete()
     state.set(MyStates.headers_st)
+def update_product_user(message: Message, bot: TeleBot, state: StateContext, user_language: str):
+    # bot.delete_message(message.chat.id, message_id=message.message_id - 1)
+    # bot.delete_message(message.chat.id, message_id=message.message_id - 2)
+    if message.text in ["⬅️ Ortga", "⬅️ Назад"]:
+        bot.send_message(message.from_user.id, please_choose_one[user_language],
+                         reply_markup=get_categories(user_language))
+        state.set(MyStates.menu_func_st)
+    else:
+        db = SQLite()
+        text_without_sticker = message.text[2:]
+        state.add_data(text_without_sticker=text_without_sticker)
+        row = None
+
+            # if len(db.get_product_info_b(user.lang, text_without_sticker)) != 0:
+            #     row = db.get_product_info_b(user.lang, text_without_sticker)
+            # elif len(db.select_sales_b_product(user.lang, text_without_sticker)) != 0:
+            #     row = db.select_sales_b_product(user.lang, text_without_sticker)
+            # elif len(db.get_combo_product_info_db_b(user.lang, text_without_sticker)) != 0:
+            #     row = db.get_combo_product_info_db_b(user.lang, text_without_sticker)
+            # elif len(db.get_pizza_product_name_db_b(user.lang, text_without_sticker)) != 0:
+            #     row = db.get_pizza_product_name_db_b(user.lang, text_without_sticker)
+        databases = [
+            db.get_product_info_b,
+
+        ]
+        print(db.get_product_info_b(user_language, text_without_sticker))
+        for database_func in databases:
+            result = database_func(user_language, text_without_sticker)
+            print(f"DEBUG: result = {result}")
+
+            if result:  # Проверяем, что result не None и не пустой
+                row = result
+                break  # Останавливаемся на первом найденном результате
+
+        if row is not None:
+            name = row[0]
+            description_to_photo = f"✏️*{name}*"
+            photo_id = row[2]
+            count_of_product = db.get_count_user_basket(message.from_user.id, text_without_sticker, user_language)
+            tanlaganda = count[message.chat.id] = int(count_of_product)
+
+            markup = edit_basket_count(user_language, name, tanlaganda)
+            mark = ReplyKeyboardRemove(selective=False)
+
+            bot.send_photo(message.chat.id, photo_id, caption=description_to_photo, reply_markup=markup,
+                           parse_mode="Markdown")
+            b_m =bot.send_message(message.chat.id, product_edit_info[user_language].format(text_without_sticker),
+                             reply_markup=mark)
+            state.add_data(b_m=b_m.message_id)
+        else:
+            pass
+def back_from_basket(call: CallbackQuery, bot: TeleBot, state: StateContext):
+    db = SQLite()
+    user_language = db.get_user_lang(call.from_user.id)
+
+    rows = db.get_user_basket(call.from_user.id, user_language)
+    with bot.retrieve_data(call.from_user.id, call.message.chat.id) as data:
+        distance = data.get('closest_km')
+        b_m = data.get('b_m')
+        order_type = data.get('order_type')
+    print(data)
+    print(order_type)
+    try:
+        bot.delete_message(call.message.chat.id, b_m)
+        bot.delete_message(call.message.chat.id, call.message.message_id)
+    except Exception as e:
+        print(e)
+    if order_type in ['🚶 Borib olish', '🚶 Самовывоз']:
+        text, formatted_number2 = check_pickup(rows, user_language)
+        basket_text = basket_count_pickup_message[user_language].format(text, formatted_number2)
+    else:
+        text, formatted_number2, formatted_number3 = check(rows, user_language, distance)
+
+        basket_text = basket_count_message[user_language].format(text, formatted_number3, formatted_number2)
+    bot.send_message(call.from_user.id, basket_text,
+                     reply_markup=get_basket_user_data(user_language, call.from_user.id))
+    state.set(MyStates.basket_user_st)
+def previous_and_next(call: CallbackQuery, bot: TeleBot):
+    action = -1 if call.data == "previous" else 1
+    update_fastfood(call, bot, action)
+
+def save_edit_basket(call: CallbackQuery, bot: TeleBot):
+    son = call.data.split("_")[1]
+    print(son)
+    nom = call.data.split("_")[2]
+    print(nom)
+    db = SQLite()
+    lang = db.get_user_lang(call.from_user.id)
+    databases = [
+        db.get_product_info_b,
+
+    ]
+
+    for database_func in databases:
+        result = database_func(lang, nom)
+        if len(result) != 0:
+            price = result
+            break
+
+    price = price[1]
+    total_price = int(son) * float(price)  # Convert price to float before multiplication
+    total_price = str(total_price)
+    user_language = db.get_user_lang(call.from_user.id)
+    db.update_data_savat(total_price, son, nom, call.message.chat.id, lang)
+
+    bot.edit_message_reply_markup(chat_id=call.message.chat.id, reply_markup=None,
+                                  message_id=call.message.message_id)
+    with bot.retrieve_data(call.from_user.id, call.message.chat.id) as data:
+        distance = data.get('closest_km')
+        order_type = data.get('order_type')
+
+    rows = db.get_user_basket(call.message.chat.id, lang)
+    if order_type in ['🚶 Borib olish', '🚶 Самовывоз']:
+        text, formatted_number2 = check_pickup(rows, lang)
+        basket_text = basket_count_pickup_message[lang].format(text, formatted_number2)
+    else:
+        text, formatted_number2, formatted_number3 = check(rows, lang, distance)
+
+        basket_text = basket_count_message[lang].format(text, formatted_number3, formatted_number2)
+    bot.send_message(call.message.chat.id, basket_text,
+                     reply_markup=get_basket_user_data(lang, call.message.chat.id))
+
+def update_fastfood(call: CallbackQuery, bot: TeleBot, step: int):
+    try:
+        chat_id = call.message.chat.id
+        count[chat_id] = max(1, min(101, count.get(chat_id, 1) + step))
+
+        db = SQLite()
+        databases = [
+            db.get_product_info_b,
+        ]
+        with bot.retrieve_data(call.from_user.id, call.message.chat.id) as data:
+            product = data['text_without_sticker']
+
+        lang = db.get_user_lang(call.from_user.id)
+        for database_func in databases:
+            result = database_func(lang, product)
+            if result:
+                row = result
+                break
+        else:
+            return
+
+        name, photo_id = row[0], row[2]
+        description_to_photo = f"✏️*{name}*"
+        markup = edit_basket_count(lang, name, count[chat_id])
+
+        bot.edit_message_media(
+            chat_id=chat_id,
+            media=InputMediaPhoto(photo_id, caption=description_to_photo, parse_mode="Markdown"),
+            message_id=call.message.message_id,
+            reply_markup=markup
+        )
+    except Exception as e:
+        print(e)
+def delete_basket_from_inline(call: CallbackQuery, bot: TeleBot):
+    nom = call.data.split("_")[1]
+    db = SQLite()
+    lang = db.get_user_lang(call.from_user.id)
+
+    db.del_from_basket_one_product(call.message.chat.id, nom,lang )
+    rows = db.get_user_basket(call.message.chat.id, lang)
+    bot.edit_message_reply_markup(chat_id=call.message.chat.id, reply_markup=None,
+                                  message_id=call.message.message_id)
+    bot.delete_message(call.message.chat.id, message_id=call.message.message_id)
+    with bot.retrieve_data(call.from_user.id, call.message.chat.id) as data:
+        distance = data.get('closest_km')
+        b_m = data.get('b_m')
+        order_type = data.get('order_type')
+
+    try:
+        bot.delete_message(call.message.chat.id, message_id=b_m)
+    except Exception as e:
+        print(e)
+    if order_type in ['🚶 Borib olish', '🚶 Самовывоз']:
+        text, formatted_number2 = check_pickup(rows, lang)
+        basket_text = basket_count_pickup_message[lang].format(text, formatted_number2)
+    else:
+        text, formatted_number2, formatted_number3 = check(rows, lang, distance)
+
+        basket_text = basket_count_message[lang].format(text, formatted_number3, formatted_number2)
+    if len(text) == 0:
+        bot.send_message(call.message.chat.id, category_text[lang],
+                         reply_markup=get_categories(lang))
+        bot.set_state(call.from_user.id, MyStates.menu_func_st, call.message.chat.id)
+    else:
+
+        bot.send_message(call.message.chat.id, basket_text,
+                         reply_markup=get_basket_user_data(lang, call.message.chat.id))
+
+        bot.send_message(call.message.chat.id, del_one_product_from_basket[lang].format(nom))
+        bot.set_state(call.from_user.id, MyStates.basket_user_st, call.message.chat.id)

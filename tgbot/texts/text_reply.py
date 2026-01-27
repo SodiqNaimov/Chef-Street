@@ -57,5 +57,6 @@ last_confirm_btn = {"uz": ["✅ Tasdiqlash", "❌ Rad etish"],
 payment_types = {'uz': ['💵 Naqd', '💳 Click', '💳 Payme', "⬅️ Ortga"],
                  'ru': ['💵 Наличные', '💳 Click', '💳 Payme', "⬅️ Назад"]}
 
-last_confirm_btn = {"uz": ["✅ Tasdiqlash", "❌ Rad etish"],
-                    "ru": ["✅ Подтвердить", "❌ Отклонить"]}
+inline_button = {"uz": "✖ Savatni bo'shatish",
+                 "ru": "✖ Очистить корзину",
+                 "en": "✖ Empty the trash"}

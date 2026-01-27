@@ -227,7 +227,7 @@ def date_and_time():
 def location_without_emoji(row):
     if row in ["📍 Chef Street Koloxoz","📍 Chef Street Колхоз"]:
         return "Chef Street Koloxoz"
-def total_cost(rows, lang, distance):
+def total_cost(rows, lang):
     text = ''
     num = 1
 

@@ -101,9 +101,14 @@ final_message = {
     'ru': "<b>Ваш заказ</b>!\n🆔<b>{}</b>\n📞 Телефон: {}\n📍 Адрес: {}\n\n {}\n\n🚕 Доставка: <b>{} cум</b>\n\n<b>Итого</b>: <b>{} сум</b>\n\n📅 Дата: <b>{}</b>\n🕔 Время: <b>{}</b>\n💬 Комментарий: {}",
     'en': "<b>your order< / b>!\n{} <b>Overall: {} so'm</b >\n\n<b>Payment type: {} </b> \n\n 😄 is a great choice! Our operator will contact you in the near future."}
 final_message_pickup = {
-    'uz': "<b>Sizning buyurtmangiz</b>!\n🆔<b>{}</b>\n📞 Telefon: {}\n📍 Manzil:{}\n\n{}🚶 Olib ketish\n\n<b>Jami: {} so'm</b>\n\n📅 Sana: <b>{}</b>\n🕔 Vaqt: <b>{}</b>\n💬 Kommentariya: {}\n💰 To'lov turi: {}",
-    'ru': "<b>Ваш заказ</b>!\n🆔<b>{}</b>\n📞 Телефон: {}\n📍 Адрес: {}\n\n {}\n\n🚶 Самовывоз\n\n<b>Итого</b>: <b>{} сум</b>\n\n📅 Дата: <b>{}</b>\n🕔 Время: <b>{}</b>\n💬 Комментарий: {}\n💰 Способ оплаты: {}",
-    'en': "<b>your order< / b>!\n{} <b>Overall: {} so'm</b >\n\n<b>Payment type: {} </b> \n\n 😄 is a great choice! Our operator will contact you in the near future."}
+    'uz': "<b>Sizning buyurtmangiz</b>!\n🆔<b>{}</b>\n\n{}<b>Jami: {} so'm</b>\n\n🚶 Olib ketish\n\n📞 Telefon: {}\n\n📅 Sana: <b>{}</b>\n🕔 Vaqt: <b>{}</b>\n💬 Kommentariya: {}\n💰 To'lov turi: {}",
+
+    'ru': "<b>Ваш заказ</b>!\n🆔<b>{}</b>\n\n{}<b>Итого: {} сум</b>\n\n🚶 Самовывоз\n\n📞 Телефон: {}\n\n📅 Дата: <b>{}</b>\n🕔 Время: <b>{}</b>\n💬 Комментарий: {}\n💰 Способ оплаты: {}",
+
+    'en': "<b>Your order</b>!\n{}<b>Total: {} so'm</b>\n\n🚶 Pickup\n\n💰 Payment type: {}\n\n😄 Great choice! Our operator will contact you shortly."
+}
+
+
 group_txt = (
     "<b>Yangi buyurtma!</b>\n\n"
     "🧾 <b>Buyurtma raqami:</b> #{}\n\n"  # placeholder 1
@@ -118,11 +123,19 @@ group_txt = (
 group_pickup_txt = (
     "<b>Yangi buyurtma!</b>\n\n"
     "🧾 <b>Buyurtma raqami:</b> #{}\n\n"  # placeholder 1
-    "{}🚕 Yetkazib berish: <b>{} so'm</b>\n\n"  # placeholders 2, 3
+    "{}\n\n"  # placeholders 2, 3
     "<b>Jami:</b> {} <b>so'm</b>\n\n"
-    "<b>💰 To'lov turi: {}</b>\n\n"
+    "🚶 Olib ketish\n\n<b>💰 To'lov turi: {}</b>\n\n"
     "{}\n\n"  # placeholder 4
     "💬 Kommentariya: {}\n\n"  # placeholder 5
     "📭 <b>Telegram account:</b> {}\n"  # placeholder 6
 
 )
+product_edit_info = {
+    'uz': "«➕ - <b>Mahulot qo'shish</b>»\n\n«➖ - <b>Mahsulotni kamaytirish</b>» \n\n«✔ Saqlash - <b>Mahsulotni saqlash</b>» \n\n«✖ Savatni bo'shatish - Savatdan tanlangan (<b>{}</b>) o'chirish»",
+    'ru': "«➕ -<b> Добавить продукт</b>»\n\n«➖ - <b>Уменьшение продукта</b>» \n\n«✔ Cохранить - <b>Cохранить продукта</b>»  \n\n«✖ Очистить корзину - Удалить выбранный (<b>{}</b>) из корзины»",
+    'en': "«➕ - <b>Add a product</b>»\n\n«➖ - <b>Product reduction</b>»\n\n«✔ Save - <b>Save the product</b>»\n\n«✖ Empty Trash - Delete the selected (<b>{}</b>) from the trash»"}
+
+del_one_product_from_basket = {"uz": "<b>{}</b> mahsuloti savatdan olib tashlandi.",
+                               "ru": "Продукт <b>{}</b>  удален из корзины.",
+                               "en": "Product <b>{}</b> removed from cart."}

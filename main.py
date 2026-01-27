@@ -85,8 +85,9 @@ def register_handlers():
 
     register_m_handler(back_products_user,text=["⬅️ Ortga", "⬅️ Назад"], state=MyStates.products_menu_st)
     register_m_handler(product_basket, text=["🛒 Savat", "🛒 Корзина"], state=MyStates.products_menu_st)
+    register_m_handler(update_product_user, state=MyStates.basket_user_st)
 
-    register_m_handler(show_product, state=MyStates.products_menu_st)
+    register_m_handler(show_product, state= MyStates.products_menu_st)
 
 
     #Enter count
@@ -127,6 +128,13 @@ def register_handlers():
     )
     bot.register_callback_query_handler(save, func=lambda call: call.data.startswith("save_"), pass_bot=True)
     bot.register_callback_query_handler(enter_number_by_handle, func=lambda call: call.data.startswith("entern_"), pass_bot=True)
+    bot.register_callback_query_handler(previous_and_next, func=lambda call: call.data in ('previous', 'next'), pass_bot=True)
+    bot.register_callback_query_handler(delete_basket_from_inline, func=lambda call: call.data.startswith("del_"),
+                                        pass_bot=True)
+    bot.register_callback_query_handler(save_edit_basket, func=lambda call: call.data.startswith("saves_"), pass_bot=True)
+    bot.register_callback_query_handler(back_from_basket, func=lambda call: call.data == "basket_back", pass_bot=True)
+
+
 def run():
     bot.infinity_polling(skip_pending=True, logger_level=logging.INFO)
 

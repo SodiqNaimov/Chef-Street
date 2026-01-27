@@ -101,3 +101,20 @@ def pickup_orders_btn(message, order_number):
     # _tasdiqlash
     markup.add(InlineKeyboardButton(text="✅ Buyurtmani qabul qilish", callback_data=f"tasdiqlash_{message.chat.id}_{order_number}"))
     return markup
+def edit_basket_count(lang, name, tanlaganda):
+    markup = InlineKeyboardMarkup()
+
+    button_text = f"{tanlaganda}"
+    button = InlineKeyboardButton(text=button_text, callback_data=name + '_f')
+    button4 = InlineKeyboardButton(text=inline_button[lang], callback_data=f"del_{name}")
+
+    button1 = InlineKeyboardButton(text='➖', callback_data='previous')
+    button2 = InlineKeyboardButton(text='➕', callback_data='next')
+    button3 = InlineKeyboardButton(text=back_inline_btn[lang], callback_data='basket_back')
+    button5 = InlineKeyboardButton(text=inline_button_save[lang], callback_data=f'saves_{tanlaganda}' + f'_{name}')
+    markup.add(button3)
+    markup.add(button4)
+
+    markup.add(button1, button, button2)
+    markup.add(button5)
+    return markup

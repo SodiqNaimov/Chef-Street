@@ -1,5 +1,5 @@
 import sqlalchemy
-from sqlalchemy import create_engine,DateTime, Column, String, Integer, CHAR, TEXT, ForeignKey, select, and_, update, Float, Text,BOOLEAN,TIME,Date,text
+from sqlalchemy import create_engine,DateTime, Column, String, Integer, CHAR, TEXT, ForeignKey, select, and_, update, Float, Text,BOOLEAN,TIME,Date,text,delete
 from sqlalchemy.exc import SQLAlchemyError
 from sqlalchemy.orm import sessionmaker, DeclarativeBase, Mapped, mapped_column, relationship, Session
 import sqlite3
@@ -12,7 +12,6 @@ from sqlalchemy.sql import func
 # cursor = database.cursor()
 engine = create_engine(f"sqlite:///{db_path}", echo=True)
 import datetime
-
 class Base(DeclarativeBase):
     pass
 
@@ -115,7 +114,6 @@ class Order(Base):
     lang: Mapped[str] = mapped_column(nullable=True)
     phone_number: Mapped[str] =  mapped_column(String(15), nullable=True)
     distance: Mapped[float] = mapped_column(nullable=True)
-    items = relationship("OrderItem", back_populates="order", cascade="all, delete-orphan")
 
     def __repr__(self):
         return f"<Order(id={self.id}, branch='{self.branch_name}', number={self.order_number})>"
@@ -366,10 +364,10 @@ class SQLite:
         finally:
             session.close()
     def add_order(self,branch_name, order_number, get_order_from, status, payment_type, product_cost, delivery_cost, ordered_time, order_date, m_id, comment, address, long, lang, phone_number, distance, total_cost):
-        date_obj = datetime.strptime(order_date, '%Y-%m-%d').date()
+        date_obj = datetime.datetime.strptime(order_date, '%Y-%m-%d').date()
 
         # Convert time string to time object
-        time_obj = datetime.strptime(ordered_time, '%H:%M').time()
+        time_obj = datetime.datetime.strptime(ordered_time, '%H:%M').time()
         clean_product_cost = int(total_cost.replace(' ', ''))
         clean_delivery_cost = int(delivery_cost.replace(' ', ''))
         orders = Order(
@@ -468,4 +466,66 @@ class SQLite:
             .values(count=count, total_price=total_price)
         )
         self.session.commit()
+    def get_count_user_basket(self, user_id, product_name, lang):
+        if lang == 'uz':
+            product_name_column = Basket.product_name_uz
+        else:
+            product_name_column = Basket.product_name_ru
+        """Get product count from user's basket"""
+        result = self.session.query(Basket.count).filter(
+            Basket.user_id == user_id,
+            product_name_column.label("product_name") == product_name
+        ).first()
+
+        return result[0] if result else 0
+    def get_product_info_b(self, lang: str, product_name: str):
+        """
+        Get product info in specified language
+        Returns: (product_name, description, price, image) or None if not found
+        """
+        lang = lang.lower()
+        valid_langs = {'uz', 'ru', 'en'}
+        if lang not in valid_langs:
+            lang = 'en'  # Default to English
+
+        product = self.session.query(
+            getattr(Product, f"name_{lang}"),
+            Product.price,
+            Product.image
+        ).filter(
+            getattr(Product, f"name_{lang}") == product_name
+        ).first()
+
+        print(f"DEBUG: get_product_info_b({lang}, {product_name}) -> {product}")
+
+        return product if product else None
+    def update_data_savat(self, total_price, count, product, user, lang):
+        try:
+            if lang == 'uz':
+                product_name_column = Basket.product_name_uz
+            else:
+                product_name_column = Basket.product_name_ru
+            stmt = (
+                update(Basket)
+                .where(and_(product_name_column.label("product_name") == product, Basket.user_id == user))
+                .values(total_price=total_price, count=count)
+            )
+            self.session.execute(stmt)
+            self.session.commit()
+        except SQLAlchemyError as e:
+            self.session.rollback()
+            print(f"Error updating basket data: {e}")
+    def del_from_basket_one_product(self, user, product, lang):
+        try:
+            # Determine the correct column based on language
+            if lang == 'uz':
+                product_name_column = Basket.product_name_uz
+            else:
+                product_name_column = Basket.product_name_ru
+            stmt = delete(Basket).where(and_(Basket.user_id == user,  product_name_column.label("product_name") == product))
+            self.session.execute(stmt)
+            self.session.commit()
+        except SQLAlchemyError as e:
+            self.session.rollback()
+            print(f"Error deleting product from basket: {e}")
 # SQLite()
