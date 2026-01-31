@@ -111,15 +111,16 @@ final_message_pickup = {
 
 group_txt = (
     "<b>Yangi buyurtma!</b>\n\n"
-    "🧾 <b>Buyurtma raqami:</b> #{}\n\n"  # placeholder 1
-    "{}🚕 Yetkazib berish: <b>{} so'm</b>\n\n"  # placeholders 2, 3
-    "<b>Jami:</b> {} <b>so'm</b>\n\n"
-    "💰 To'lov turi: {}"
-    "{}\n\n"# placeholder 4
-    "💬 Kommentariya: {}\n\n"  # placeholder 5
-    "📭 <b>Telegram account:</b> {}\n"# placeholder 6
-
+    "🧾 <b>Buyurtma raqami:</b> #{order}\n\n"
+    "{items}"
+    "🚕 Yetkazib berish: <b>{delivery} so'm</b>\n\n"
+    "<b>Jami:</b> {total} <b>so'm</b>\n\n"
+    "💰 To'lov turi: {payment}\n"
+    "{address}\n\n"
+    "💬 Kommentariya: {comment}\n\n"
+    "📭 <b>Telegram account:</b> {tg}\n"
 )
+
 group_pickup_txt = (
     "<b>Yangi buyurtma!</b>\n\n"
     "🧾 <b>Buyurtma raqami:</b> #{}\n\n"  # placeholder 1
@@ -139,3 +140,20 @@ product_edit_info = {
 del_one_product_from_basket = {"uz": "<b>{}</b> mahsuloti savatdan olib tashlandi.",
                                "ru": "Продукт <b>{}</b>  удален из корзины.",
                                "en": "Product <b>{}</b> removed from cart."}
+
+delivery_text = {"uz": "Buyurtmangizni qayerga yetkazish kerak? Lokatsiyani jo‘nating va biz sizga eng yaqin joylashgan filialni aniqlaymiz 📍",
+                 "ru": "Куда нужно доставить Ваш заказ? Отправьте  свою локацию и мы определим ближайший к вам филиал 📍"}
+please_click_button_location = {"uz": "Iltimos «📍 Manzilni Yuborish degan tugmani bosing!» ",
+                                "ru": "Пожалуйста нажмите кнопку с надписью «📍 Отправить адрес!»  "}
+not_home = {"uz":"Siz Buxoro viloyati,Buxoro shahridan yoki Jondor tumanidan buyurtma bermayapsiz! Biz Faqat Buxoro shahridan yoki Jondor tumanidan buyurtma qabul qilamiz!\n\n <b>{}</b>\n Sizning manzilingiz to'g'rimi?",
+            "ru":"Вы заказываете не из Бухарской области, города Бухары или Жондарского района! Мы принимаем заказы только из города Бухары или Джондорского района!\n\n <b>{}</b> \n Ваш адрес правильный?",
+            "en":"You are not from the Fergana region, Rishtan district! We accept orders only from the Rishon area!\n\n <b>{}</b>\n is your address correct?"}
+confirm_location_text = {"uz": "Buyurtma bermoqchi bo'lgan manzil: <b>{}</b> . Ushbu manzilni tasdiqlaysizmi?",
+                         "ru": "Адрес, по которому вы хотите заказать: <b>{}</b> . Вы подтверждаете этот адрес?"}
+user_address_not_text = {"uz": "Sizda hali yetkazib berish manzili yo'q.",
+                         "ru": "У вас еще нет адреса доставки."}
+user_address_text = {"uz": "🚖 Yetkazib berish manzilni tanlang",
+                     "ru": "🚖 Выберите адрес доставки"}
+
+send_location_txt = {"uz" :"Yetkazib berish manzilingizni lokatsiyasini yuboring yoki <b>«📍 Lokatsiya yuborish»</b> tugmasini bosing:",
+                     "ru": "Отправьте нам свою локацию доставки или нажмите кнопку <b>«📍 Отправить локацию»</b>:"}

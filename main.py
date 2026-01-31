@@ -56,6 +56,33 @@ def register_handlers():
     #Order
     register_m_handler(order_func, text = ["🛍 Buyurtma berish", "🛍 Заказать"], state=MyStates.headers_st)
     register_m_handler(header, text = ["⬅️ Ortga", "⬅️ Назад", "⬅️ Back"], state=MyStates.order_func_st)
+
+    register_m_handler(delivery_func, text=['🚙 Yetkazib berish', '🚙 Доставка'], state=MyStates.order_func_st)
+    register_m_handler(back_pickup_func, text=["⬅️ Ortga", "⬅️ Назад"],state=MyStates.delivery_func_st)
+    register_m_handler(deliveryss_branch_func, text=for_main_btn, state=MyStates.delivery_func_st)
+
+    bot.register_message_handler(get_location_by_handle, state=MyStates.deliveryss_branch_func_st, content_types=['location'],
+                                 pass_bot=True)
+    register_m_handler(back_get_location_by_handle, text=["⬅️ Ortga", "⬅️ Назад"], state=MyStates.not_home_handle_st)
+    register_m_handler(send_again_error, text=["📍 Manzilni Qayta Yuborish 🔄", "📍 Повторная Отправка Адреса 🔄"],
+                       state=MyStates.not_home_handle_st)
+
+    bot.register_message_handler(confirm_location, state=MyStates.delivery_func_st, content_types=['location'],
+                                 pass_bot=True)
+
+    register_m_handler(back_pickup_func, text=["⬅️ Ortga", "⬅️ Назад"], state=MyStates.not_home_st)
+    register_m_handler(delivery_func, text=["📍 Manzilni Qayta Yuborish 🔄", "📍 Повторная Отправка Адреса 🔄"],
+                       state=MyStates.not_home_st)
+
+    register_m_handler(back_confirm_location, text=["❌ Yo'q", "❌ Нет", "⬅️ Ortga", "⬅️ Назад"],
+                       state=MyStates.confirm_location_st)
+    register_m_handler(delivery_menu_func, text=["✅ Ha", "✅ Да"], state=MyStates.confirm_location_st)
+
+    register_m_handler(my_addresses_func, text=["🗺 Mening manzillarim", "🗺 Мои адреса"],
+                       state=MyStates.delivery_func_st)
+    register_m_handler(back_delivery_address_func, text=["⬅️ Ortga", "⬅️ Назад"], state=MyStates.my_addresses_func_st)
+    register_m_handler(address_user_func, state=MyStates.my_addresses_func_st)
+
     register_m_handler(pickup_func, text = ['🚶 Borib olish', '🚶 Самовывоз'], state=MyStates.order_func_st)
     register_m_handler(back_pickup_func, text = ["⬅️ Ortga", "⬅️ Назад", "⬅️ Back"], state=MyStates.pickup_func_st)
     register_m_handler(menu_func, text = ["📍 Chef Street Koloxoz","📍 Chef Street Колхоз"],

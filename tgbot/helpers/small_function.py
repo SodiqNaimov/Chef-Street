@@ -257,3 +257,22 @@ def payment_to_txt(payment):
         return 'Click'
     elif payment in ['💳 Payme']:
         return 'Payme'
+
+def send_address(latitude, longitude, language):
+    api_key = "pk.65512ed492cabf60d4a8cb39fc57bb06"
+    url = f'https://us1.locationiq.com/v1/reverse.php?key={api_key}&lat={latitude}&lon={longitude}&format=json&accept-language={language}'
+
+    try:
+        response = requests.get(url)
+        response.raise_for_status()
+        data = response.json()
+        # print(data)
+        if 'address' in data:
+            address = data['display_name']
+            return data,address
+        else:
+            return "Address not found."
+
+    except requests.exceptions.RequestException as e:
+        print(f"Request failed: {e}")
+        return None

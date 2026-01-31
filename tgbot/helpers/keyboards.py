@@ -118,3 +118,43 @@ def edit_basket_count(lang, name, tanlaganda):
     markup.add(button1, button, button2)
     markup.add(button5)
     return markup
+
+def delivery_address(lang):
+    markup = ReplyKeyboardMarkup(resize_keyboard=True, row_width=2)
+    contact_button = KeyboardButton(text=pickup_bt[lang], request_location=True)
+    markup.add(contact_button)
+    markup.add(*delivery_address_btn[lang])
+
+    markup.add(*pickup_branches_btns[lang])
+    return markup
+def get_location(lang):
+    markup = ReplyKeyboardMarkup(True, True)
+    btn = KeyboardButton(location_btn[lang], request_location=True)
+    markup.add(btn)
+    markup.add(*back_btn[lang])
+
+    return markup
+def get_user_category(lang):
+    db = SQLite()
+
+    db_cat = db.get_category(lang)
+
+    markup = ReplyKeyboardMarkup(resize_keyboard=True, row_width=2)
+    markup.add(*back_btn[lang])
+
+    markup.add(*basket_btn_sub[lang], *aksiya_btn[lang])
+    # markup.add()
+    category_list = []
+
+    for i in db_cat:
+        if i[0] not in category_list:
+            category_list.append(i[0])
+
+    markup.add(*pizza_btn[lang], *category_list)
+    return markup
+def delivery_address_two(lang, text):
+    markup = ReplyKeyboardMarkup(resize_keyboard=True, row_width=2)
+    markup.add(*text)
+    markup.add(*back_btn[lang])
+
+    return markup

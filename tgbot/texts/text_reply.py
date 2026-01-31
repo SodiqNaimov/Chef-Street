@@ -60,3 +60,16 @@ payment_types = {'uz': ['💵 Naqd', '💳 Click', '💳 Payme', "⬅️ Ortga"]
 inline_button = {"uz": "✖ Savatni bo'shatish",
                  "ru": "✖ Очистить корзину",
                  "en": "✖ Empty the trash"}
+delivery_address_btn = {"uz": ["🗺 Mening manzillarim"],
+                        "ru": ["🗺 Мои адреса"]}
+
+for_main_btn = ["📍 Chef Street Koloxoz", "📍 Chef Street Колхоз"]
+
+location_btn = {'uz': "📍 Manzilni Yuborish",
+                'ru': "📍 Отправить адрес",
+                'en': '📍 Send location'}
+not_location_btn = {"uz":["📍 Manzilni Qayta Yuborish 🔄", '⬅️ Ortga'],
+              "ru":["📍 Повторная Отправка Адреса 🔄", '⬅️ Назад']}
+
+confirm_location_btn = {"uz": ["❌ Yo'q", "✅ Ha",  '⬅️ Ortga'],
+                        "ru": ["❌ Нет", "✅ Да", '⬅️ Назад']}

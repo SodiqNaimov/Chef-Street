@@ -570,15 +570,22 @@ def accept_order(message: Message, bot: TeleBot, state: StateContext, user_langu
             timess,  # Time
             comments  # Comments
         )
-        groups_txt = group_txt.format(order_number, text, formatted_number3, formatted_number2, adrdress_phone,
-                         comments, silka)
-        markup = pickup_orders_btn(message, order_number)
 
-        m = bot.send_message(-1003871440267,
-                             groups_txt,
-                             reply_markup=markup)
+        groups_txt = group_txt.format(
+            order=order_number,
+            items=text,
+            delivery=formatted_number3,
+            total=formatted_number2,
+            payment=payment_to_txt(payment),
+            address=adrdress_phone,
+            comment=comments or "-",
+            tg=silka
+        )
+
+
+
         db.add_order(branch_d, order_number, "🤖 Telegram bot", "Jarayonda", payment_to_txt(payment), s,
-                     formatted_number3, timess, dates, m.message_id, comments,
+                     formatted_number3, timess, dates, "1000", comments,
                      str(return_data(message, bot, 'location')), Longitude, Latitude,
                      str(return_data(message, bot, 'phone_number')), yax, formatted_number2)
 
@@ -787,3 +794,194 @@ def delete_basket_from_inline(call: CallbackQuery, bot: TeleBot):
 
         bot.send_message(call.message.chat.id, del_one_product_from_basket[lang].format(nom))
         bot.set_state(call.from_user.id, MyStates.basket_user_st, call.message.chat.id)
+
+
+def delivery_func(message: Message, bot: TeleBot, user_language: str, state: StateContext):
+    state.add_data(order_type=message.text)
+    bot.send_message(message.from_user.id, delivery_text[user_language],
+                     reply_markup=delivery_address(user_language))
+    state.set(MyStates.delivery_func_st)
+
+def deliveryss_branch_func(message: Message, bot: TeleBot, user_language: str, state: StateContext):
+    state.add_data(branch=message.text)
+    bot.send_message(message.from_user.id, please_click_button_location[user_language], reply_markup=get_location(user_language))
+    state.set(MyStates.deliveryss_branch_func_st)
+def back_deliveryss_branch_func(message: Message, bot: TeleBot, user_language: str, state: StateContext):
+    bot.send_message(message.from_user.id, delivery_text[user_language],
+                     reply_markup=delivery_address(user_language))
+    state.set(MyStates.delivery_func_st)
+def get_location_by_handle(message: Message, bot: TeleBot, user_language: str, state: StateContext):
+    Latitude = message.location.latitude
+    Longitude = message.location.longitude
+    print('this work')
+    try:
+        location_city, location = send_address(latitude=Latitude, longitude=Longitude, language=user_language)
+
+        # Extract city or county from the address
+        address = location_city.get('address', {})
+        city = address.get('city') or address.get('town') or address.get('village')  # Fallback to other keys
+        county = address.get('county')
+        print(location)
+        print(location_city)
+        print(Latitude)
+        print(Longitude)
+
+        if city in ['Buxoro shahri', 'Бухара']:
+
+            db = SQLite()
+
+            updated_user = db.update_user(
+                message.from_user.id,
+                {
+                    "address": location,
+                    "long": Longitude,
+                    "lat": Latitude
+                }
+            )
+
+            if updated_user is not None:
+                print("✅ UPDATE OK")
+                print(f"Address: {updated_user.address}")
+                print(f"Lat: {updated_user.lat}, Long: {updated_user.long}")
+            else:
+                print("❌ UPDATE FAILED")
+
+            closest_location_km = find_closest_location((Latitude, Longitude), user_language)[1]
+            print("closest_location_km")
+            state.add_data(latitude=Latitude)
+            state.add_data(longitude=Longitude)
+            state.add_data(location=str(location))  # Convert to string if not serializable
+            state.add_data(closest_km=closest_location_km)
+            bot.send_message(message.from_user.id, category_text[user_language],
+                             reply_markup=get_categories(user_language))
+            state.set(MyStates.menu_func_st)
+        else:
+            bot.send_message(message.from_user.id, not_home[user_language].format(location),
+                                 reply_markup=reply_markup(not_location_btn[user_language], 2))
+            state.set(MyStates.not_home_handle_st)
+    except Exception as e:
+        bot.send_message(866489508, f"{e}\n833 qator")
+        location_city, location = send_address(latitude=Latitude, longitude=Longitude, language=user_language)
+        bot.send_message(message.from_user.id, not_home[user_language].format(location),
+                         reply_markup=reply_markup(not_location_btn[user_language], 2))
+        state.set(MyStates.not_home_handle_st)
+def back_get_location_by_handle(message: Message, bot: TeleBot, user_language: str, state: StateContext):
+
+    bot.send_message(message.from_user.id, delivery_text[user_language],
+                     reply_markup=delivery_address(user_language))
+    state.set(MyStates.delivery_func_st)
+
+def send_again_error(message: Message, bot: TeleBot, user_language: str, state: StateContext):
+    bot.send_message(message.from_user.id, please_click_button_location[user_language], reply_markup=get_location(user_language))
+    state.set(MyStates.deliveryss_branch_func_st)
+
+def confirm_location(message: Message, bot: TeleBot, user_language: str, state: StateContext):
+    Latitude = message.location.latitude
+    Longitude = message.location.longitude
+    print('this work')
+    try:
+        location_city, location = send_address(latitude=Latitude, longitude=Longitude, language=user_language)
+        print(location_city)
+        print(location)
+        # Extract city or county from the address
+        address = location_city.get('address', {})
+        city = address.get('city') or address.get('town') or address.get('village')  # Fallback to other keys
+        county = address.get('county')
+        if city in ['Buxoro shahri', 'Бухара']:
+            db = SQLite()
+
+            updated_user = db.update_user(
+                message.from_user.id,
+                {
+                    "address": location,
+                    "long": Longitude,
+                    "lat": Latitude
+                }
+            )
+
+            if updated_user is not None:
+                print("✅ UPDATE OK")
+                print(f"Address: {updated_user.address}")
+                print(f"Lat: {updated_user.lat}, Long: {updated_user.long}")
+            else:
+                print("❌ UPDATE FAILED")
+
+            closest_location_name, closest_location_km = find_closest_location((Latitude, Longitude), user_language)
+            print(closest_location_km)
+            state.add_data(latitude=Latitude)
+            state.add_data(longitude=Longitude)
+            state.add_data(location=location)
+            state.add_data(branch=closest_location_name)
+            state.add_data(closest_km=closest_location_km)
+            bot.send_message(
+                message.from_user.id,
+                confirm_location_text[user_language].format(location),
+                reply_markup=reply_markup(confirm_location_btn[user_language], 2)
+            )
+            state.set(MyStates.confirm_location_st)
+        else:
+            bot.send_message(
+                message.from_user.id,
+                not_home[user_language].format(location),
+                reply_markup=reply_markup(not_location_btn[user_language], 2)
+            )
+            state.set(MyStates.not_home_st)
+    except Exception as e:
+        bot.send_message(866489508, f"{e}\n737 qator")
+        location_city, location = send_address(latitude=Latitude, longitude=Longitude, language=user_language)
+        bot.send_message(message.from_user.id, not_home[user_language].format(location),
+                         reply_markup=reply_markup(not_location_btn[user_language], 2))
+        state.set(MyStates.not_home_st)
+
+def back_confirm_location(message: Message, bot: TeleBot, user_language: str, state: StateContext):
+    bot.send_message(message.from_user.id, delivery_text[user_language],
+                     reply_markup=delivery_address(user_language))
+    state.set(MyStates.delivery_func_st)
+def delivery_menu_func(message: Message, bot: TeleBot, user_language: str, state: StateContext):
+    db = SQLite()
+    rows = db.get_user_address(message.from_user.id)
+    print(rows)
+    with state.data() as data:
+        if rows:
+            print('asdasd')
+            print(data.get('location'))
+            db.update_user_address(data.get('location'), data.get('longitude'), data.get('latitude'), message.from_user.id)
+        else:
+            db.insert_user_address(message.from_user.id, data.get('location'), data.get('longitude'), data.get('latitude'))
+    print(data.get('closest_km'))
+    bot.send_message(message.from_user.id,
+                     pickup_location_text[user_language].format(data.get('branch'), data.get('closest_km')))
+    bot.send_message(message.from_user.id, category_text[user_language], reply_markup=get_categories(user_language))
+    state.set(MyStates.menu_func_st)
+def my_addresses_func(message: Message, bot: TeleBot, user_language: str, state: StateContext):
+    db = SQLite()
+    rows = db.get_user_address(message.from_user.id)
+    if rows:
+        bot.send_message(message.from_user.id, user_address_text[user_language],
+                         reply_markup=delivery_address_two(user_language, [rows]))
+        state.set(MyStates.my_addresses_func_st)
+    else:
+        bot.send_message(message.from_user.id, user_address_not_text[user_language],
+                         reply_markup=delivery_address(user_language))
+        state.set(MyStates.delivery_func_st)
+
+def back_delivery_address_func(message: Message, bot: TeleBot, user_language: str, state: StateContext):
+
+    bot.send_message(message.from_user.id, send_location_txt[user_language],
+                     reply_markup=delivery_address(user_language))
+    state.set(MyStates.delivery_func_st)
+
+def address_user_func(message: Message, bot: TeleBot, user_language: str, state: StateContext):
+    db = SQLite()
+    location, Longitude, Latitude = db.get_user_full_address(message.from_user.id)
+    closest_location_name = find_closest_location((Latitude, Longitude), user_language)[0]
+    closest_location_km = find_closest_location((Latitude, Longitude), user_language)[1]
+    with bot.retrieve_data(message.from_user.id, message.chat.id) as data:
+        data['latitude'] = Latitude
+        data['longitude'] = Longitude
+        data['location'] = location
+        data['branch'] = closest_location_name
+        data['closest_km'] = closest_location_km
+    bot.send_message(message.from_user.id,
+                     pickup_location_text[user_language].format(closest_location_name, closest_location_km), reply_markup=get_categories(user_language))
+    state.set(MyStates.menu_func_st)

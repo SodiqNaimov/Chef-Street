@@ -1,5 +1,6 @@
 import sqlalchemy
-from sqlalchemy import create_engine,DateTime, Column, String, Integer, CHAR, TEXT, ForeignKey, select, and_, update, Float, Text,BOOLEAN,TIME,Date,text,delete
+from sqlalchemy import create_engine, DateTime, Column, String, Integer, CHAR, TEXT, ForeignKey, select, and_, update, \
+    Float, Text, BOOLEAN, TIME, Date, text, delete, insert
 from sqlalchemy.exc import SQLAlchemyError
 from sqlalchemy.orm import sessionmaker, DeclarativeBase, Mapped, mapped_column, relationship, Session
 import sqlite3
@@ -135,6 +136,41 @@ class SQLite:
         )
         self.session.add(user)
         self.session.commit()
+    def update_user_address(self, address, longitude, latitude, user_id):
+        try:
+            user = self.session.query(User).filter(User.user_id == user_id).first()
+            if not user:
+                return False  # user not found
+
+            user.address = str(address)
+            user.long = str(longitude)
+            user.lat = str(latitude)
+
+            self.session.commit()
+            return True
+
+        except SQLAlchemyError as e:
+            self.session.rollback()
+            print(f"Error updating user address: {e}")
+            raise
+
+    def insert_user_address(self, user_id, address, longitude, latitude):
+        try:
+            stmt = insert(User).values(
+                user_id=user_id,
+                address=str(address),
+                long=str(longitude),
+                lat=str(latitude)
+            )
+
+            self.session.execute(stmt)
+            self.session.commit()
+            return True
+
+        except SQLAlchemyError as e:
+            self.session.rollback()
+            print(f"Error inserting user address: {e}")
+            raise
     def get_all_locations(self, active_only: bool = 1) -> list:
         """Retrieve all locations from the database, optionally filtering by active status"""
         query = self.session.query(Locations)
@@ -186,6 +222,37 @@ class SQLite:
         self.session.commit()
 
         return next_number
+    def get_user_full_address(self, user_id):
+        """Get user's full address with coordinates using SQLAlchemy.
+
+        Args:
+            user_id: Telegram user ID
+
+        Returns:
+            Tuple of (address, longitude, latitude) if found, None otherwise
+        """
+        session = self.session
+        try:
+            # Using SQLAlchemy Core style query
+            stmt = select(
+                User.address,
+                User.long,
+                User.lat
+            ).where(
+                User.user_id == str(user_id)
+            )
+
+            result = session.execute(stmt).first()
+
+            if result:
+                return (result.address, result.long, result.lat)
+            return None
+
+        except SQLAlchemyError as e:
+            print(f"Error fetching user address: {e}")
+            return None
+        finally:
+            session.close()
     def get_user_info(self, user_id: int):
         user = self.session.query(User).filter(User.user_id == str(user_id)).first()
 
@@ -528,4 +595,7 @@ class SQLite:
         except SQLAlchemyError as e:
             self.session.rollback()
             print(f"Error deleting product from basket: {e}")
+    def get_user_address(self, user_id):
+        row = self.session.query(User.address).filter_by(user_id=user_id).first()
+        return row.address if row else None
 # SQLite()

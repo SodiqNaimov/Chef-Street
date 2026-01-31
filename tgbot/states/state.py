@@ -22,6 +22,13 @@ class MyStates(StatesGroup):
     comments_st = State()
     payment_type_st = State()
     confirm_last_st =State()
+    delivery_func_st = State()
+    deliveryss_branch_func_st = State()
+    not_home_handle_st = State()
+    not_home_st = State()
+    confirm_location_st = State()
+    delivery_address_two_st = State()
+    my_addresses_func_st = State()
 #For user's registration
 class Register(StatesGroup):
     lang_st = State()
