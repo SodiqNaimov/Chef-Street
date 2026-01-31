@@ -985,3 +985,49 @@ def address_user_func(message: Message, bot: TeleBot, user_language: str, state:
     bot.send_message(message.from_user.id,
                      pickup_location_text[user_language].format(closest_location_name, closest_location_km), reply_markup=get_categories(user_language))
     state.set(MyStates.menu_func_st)
+def click_payment(message: Message, bot: TeleBot, user_language: str, state: StateContext):
+    state.add_data(payment=message.text)
+    db = SQLite()
+    rows = db.get_user_basket(message.from_user.id, user_language)
+
+    payload = "💳 Click"
+    provider_token = "398062629:TEST:999999999_F91D8F69C042267444B74CC0B3C747757EB0E065"
+    order_type = return_data(message, bot, 'order_type')
+    distance = return_data(message, bot, 'closest_km')
+    if order_type in ['🚶 Borib olish', '🚶 Самовывоз']:
+        text, formatted_number2 = check_pickup(rows, user_language)
+        total_amount = int(formatted_number2.replace(" ", "")) * 100
+        title =text
+        description = text + "\n🚖 Yetkazib berish narxi: 5000 so'm"
+
+    else:
+        text, formatted_number2, formatted_number3 = check(rows, user_language, distance)
+        print(formatted_number2)
+        total_amount = int(formatted_number2.replace(" ", "")) * 100
+        title =text
+
+        description = text
+    print(total_amount)
+    prices = [LabeledPrice(label="💳 Click", amount=total_amount)]
+    currency = "UZS"
+    start_parameter = "unique_parameter"  # Replace "unique_parameter" with a unique identifier for the invoice
+
+    bot.send_invoice(
+        message.chat.id,
+        title='Click',
+        description=description,
+
+        invoice_payload=payload,
+        provider_token=provider_token,
+        currency=currency,
+        prices=prices,
+        start_parameter=start_parameter,
+    )
+
+    bot.send_message(message.chat.id,payment_button_messsage[user_language],reply_markup=reply_markup(back_btn[user_language],2))
+
+    state.set(MyStates.click_payment_st)
+def back_delivery_func(message: Message, bot: TeleBot, user_language: str, state: StateContext):
+    bot.send_message(message.from_user.id, delivery_text[user_language],
+                     reply_markup=delivery_address(user_language))
+    state.set(MyStates.delivery_func_st)

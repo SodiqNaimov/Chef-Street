@@ -29,6 +29,7 @@ class MyStates(StatesGroup):
     confirm_location_st = State()
     delivery_address_two_st = State()
     my_addresses_func_st = State()
+    click_payment_st = State()
 #For user's registration
 class Register(StatesGroup):
     lang_st = State()

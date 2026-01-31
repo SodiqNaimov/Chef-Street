@@ -157,3 +157,6 @@ user_address_text = {"uz": "🚖 Yetkazib berish manzilni tanlang",
 
 send_location_txt = {"uz" :"Yetkazib berish manzilingizni lokatsiyasini yuboring yoki <b>«📍 Lokatsiya yuborish»</b> tugmasini bosing:",
                      "ru": "Отправьте нам свою локацию доставки или нажмите кнопку <b>«📍 Отправить локацию»</b>:"}
+payment_button_messsage = {"uz":"To'lov qilish uchun tugma ustiga bosing 👇🏻",
+               "ru":"Нажмите на кнопку для оплаты 👇🏻",
+              "en":"Select a section 👇🏻"}

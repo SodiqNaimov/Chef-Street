@@ -60,6 +60,7 @@ def register_handlers():
     register_m_handler(delivery_func, text=['🚙 Yetkazib berish', '🚙 Доставка'], state=MyStates.order_func_st)
     register_m_handler(back_pickup_func, text=["⬅️ Ortga", "⬅️ Назад"],state=MyStates.delivery_func_st)
     register_m_handler(deliveryss_branch_func, text=for_main_btn, state=MyStates.delivery_func_st)
+    register_m_handler(back_delivery_func, text=["⬅️ Ortga", "⬅️ Назад"],state=MyStates.deliveryss_branch_func_st)
 
     bot.register_message_handler(get_location_by_handle, state=MyStates.deliveryss_branch_func_st, content_types=['location'],
                                  pass_bot=True)
@@ -104,6 +105,7 @@ def register_handlers():
     register_m_handler(back_payment,text=["⬅️ Ortga", "⬅️ Назад"], state=MyStates.payment_type_st)
 
     register_m_handler(payment_cash, text=['💵 Naqd', '💵 Наличные'], state=MyStates.payment_type_st)
+    register_m_handler(click_payment, text=['💳 Click'], state=MyStates.payment_type_st)
 
     register_m_handler(cancel_order, text=["❌ Rad etish", "❌ Отклонить"], state=MyStates.confirm_last_st)
     register_m_handler(accept_order, text=["✅ Tasdiqlash", "✅ Подтвердить"], state=MyStates.confirm_last_st)
