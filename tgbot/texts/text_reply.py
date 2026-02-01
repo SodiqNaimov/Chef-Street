@@ -1,6 +1,6 @@
 lang_msg = ["🇺🇿O'zbek tili", "🇷🇺Pусский язык"]
 
-admin_btn = ["👤 Users count"]
+admin_btn = ["📊 Statistika", "👤 Foydalanuvchilar soni", "👤 Foydalanuvchilar haqida ma'lumot", "✏️ Foydalanuvchilarga xabar yuborish", "Mahsulotlar va Categoriyalar",  "🛵 Kuryerlar bo'limi", "❌ Buyurtmani bekor qilish", "🔄 Kuryerni almashtirish", "👨‍💻 Operatorlar bo'limi", "👨‍💻 Adminlar bo'limi", '🏢 Filliallar']
 order_btn = {"uz": ["🛍 Buyurtma berish"],
              "ru": ["🛍 Заказать"]}
 

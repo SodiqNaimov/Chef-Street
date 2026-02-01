@@ -96,10 +96,10 @@ def reply_phone_number(lang):
     contact_button = KeyboardButton(text=get_contact_btn[lang], request_contact=True)
     markup.add(contact_button)
     return markup
-def pickup_orders_btn(message, order_number):
+def pickup_orders_btn(message):
     markup = InlineKeyboardMarkup(row_width=1)
-    # _tasdiqlash
-    markup.add(InlineKeyboardButton(text="✅ Buyurtmani qabul qilish", callback_data=f"tasdiqlash_{message.chat.id}_{order_number}"))
+    markup.add(InlineKeyboardButton(text="❎ Bekor qilish", callback_data=str(message.chat.id) + "_otkaz"))
+    markup.add(InlineKeyboardButton(text="✅ Buyurtmani qabul qilish", callback_data=str(message.chat.id) + "_tasdiqlash"))
     return markup
 def edit_basket_count(lang, name, tanlaganda):
     markup = InlineKeyboardMarkup()
@@ -134,27 +134,17 @@ def get_location(lang):
     markup.add(*back_btn[lang])
 
     return markup
-def get_user_category(lang):
-    db = SQLite()
 
-    db_cat = db.get_category(lang)
-
-    markup = ReplyKeyboardMarkup(resize_keyboard=True, row_width=2)
-    markup.add(*back_btn[lang])
-
-    markup.add(*basket_btn_sub[lang], *aksiya_btn[lang])
-    # markup.add()
-    category_list = []
-
-    for i in db_cat:
-        if i[0] not in category_list:
-            category_list.append(i[0])
-
-    markup.add(*pizza_btn[lang], *category_list)
-    return markup
 def delivery_address_two(lang, text):
     markup = ReplyKeyboardMarkup(resize_keyboard=True, row_width=2)
     markup.add(*text)
     markup.add(*back_btn[lang])
 
+    return markup
+
+def tasdiq_btn(chat_id):
+    markup = InlineKeyboardMarkup(row_width=1)
+    markup.add(InlineKeyboardButton(text="🏁 Finish", callback_data=str(chat_id) + "_tugatildi"))
+
+    markup.add(InlineKeyboardButton(text="❎ Bekor qilish", callback_data=str(chat_id) + "_otkaz"))
     return markup

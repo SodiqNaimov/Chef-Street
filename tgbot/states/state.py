@@ -3,6 +3,8 @@ from telebot.handler_backends import State, StatesGroup  # States
 #For admin's dashboard
 class Panel(StatesGroup):
     open_admin_st = State()
+    send_rassilka_st = State()
+    confirm_rasilka_st = State()
 #For user's dashboard
 class MyStates(StatesGroup):
     headers_st = State()

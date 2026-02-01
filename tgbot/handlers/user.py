@@ -139,12 +139,22 @@ def get_answer(message: Message, bot: TeleBot,user_language: str,  state: StateC
         bot.send_message(a_q[message.chat.id], answer_to_question[lang].format(message.text))
         bot.send_message(message.chat.id, 'Javobingiz yuborildi')
         header(message, bot, user_language, state)
-
-def order_func(message: Message, bot: TeleBot,user_language: str,  state: StateContext):
+@only_between_11_and_00
+def order_func(
+    message: Message,
+    bot: TeleBot,
+    state: StateContext,
+    user_language: str,
+):
     bot.send_message(message.from_user.id, order_type_text[user_language],  reply_markup=reply_markup(order_type_btn[user_language], 2))
     state.set(MyStates.order_func_st)
-
-def pickup_func(message: Message, bot: TeleBot, user_language: str, state: StateContext):
+@only_between_11_and_00
+def pickup_func(
+    message: Message,
+    bot: TeleBot,
+    state: StateContext,
+    user_language: str,
+):
     state.add_data(order_type=message.text)
     bot.send_message(message.from_user.id, location_text[user_language], reply_markup=pickup_branches_btn(user_language))
     state.set(MyStates.pickup_func_st)
@@ -589,7 +599,7 @@ def accept_order(message: Message, bot: TeleBot, state: StateContext, user_langu
                      str(return_data(message, bot, 'location')), Longitude, Latitude,
                      str(return_data(message, bot, 'phone_number')), yax, formatted_number2)
 
-    markup = pickup_orders_btn(message, order_number)
+    markup = pickup_orders_btn(message)
     # db.register_addresses(return_data(message, bot, 'phone_number'),    return_data(message, bot, 'location'), Longitude, Latitude)
 
     bot.send_message(-1003871440267,
@@ -795,7 +805,7 @@ def delete_basket_from_inline(call: CallbackQuery, bot: TeleBot):
         bot.send_message(call.message.chat.id, del_one_product_from_basket[lang].format(nom))
         bot.set_state(call.from_user.id, MyStates.basket_user_st, call.message.chat.id)
 
-
+@only_between_11_and_00
 def delivery_func(message: Message, bot: TeleBot, user_language: str, state: StateContext):
     state.add_data(order_type=message.text)
     bot.send_message(message.from_user.id, delivery_text[user_language],
@@ -990,40 +1000,46 @@ def click_payment(message: Message, bot: TeleBot, user_language: str, state: Sta
     db = SQLite()
     rows = db.get_user_basket(message.from_user.id, user_language)
 
-    payload = "💳 Click"
-    provider_token = "398062629:TEST:999999999_F91D8F69C042267444B74CC0B3C747757EB0E065"
+
     order_type = return_data(message, bot, 'order_type')
     distance = return_data(message, bot, 'closest_km')
     if order_type in ['🚶 Borib olish', '🚶 Самовывоз']:
         text, formatted_number2 = check_pickup(rows, user_language)
         total_amount = int(formatted_number2.replace(" ", "")) * 100
-        title =text
         description = text + "\n🚖 Yetkazib berish narxi: 5000 so'm"
 
     else:
         text, formatted_number2, formatted_number3 = check(rows, user_language, distance)
         print(formatted_number2)
         total_amount = int(formatted_number2.replace(" ", "")) * 100
-        title =text
-
         description = text
+    if message.text=="💳 Click":
+        payload = "💳 Click"
+        title = 'Click'
+        provider_token = "398062629:TEST:999999999_F91D8F69C042267444B74CC0B3C747757EB0E065"
+        prices = [LabeledPrice(label="💳 Click", amount=total_amount)]
+    else:
+        title = 'Payme'
+
+        payload = "💳 Payme"
+
+        provider_token = "371317599:TEST:1769943092428"
+        prices = [LabeledPrice(label="💳 Payme", amount=total_amount)]
     print(total_amount)
-    prices = [LabeledPrice(label="💳 Click", amount=total_amount)]
     currency = "UZS"
     start_parameter = "unique_parameter"  # Replace "unique_parameter" with a unique identifier for the invoice
 
-    bot.send_invoice(
+    m = bot.send_invoice(
         message.chat.id,
-        title='Click',
+        title=title,
         description=description,
-
         invoice_payload=payload,
         provider_token=provider_token,
         currency=currency,
         prices=prices,
         start_parameter=start_parameter,
     )
-
+    state.add_data(m_id = m.message_id)
     bot.send_message(message.chat.id,payment_button_messsage[user_language],reply_markup=reply_markup(back_btn[user_language],2))
 
     state.set(MyStates.click_payment_st)
@@ -1031,3 +1047,155 @@ def back_delivery_func(message: Message, bot: TeleBot, user_language: str, state
     bot.send_message(message.from_user.id, delivery_text[user_language],
                      reply_markup=delivery_address(user_language))
     state.set(MyStates.delivery_func_st)
+
+def back_from_online_payment(message: Message, bot: TeleBot, user_language: str, state: StateContext):
+    m_id = return_data(message, bot, 'm_id')
+    bot.delete_message(message.chat.id, m_id)
+    bot.send_message(message.from_user.id, payment_type_txt[user_language],
+                     reply_markup=reply_markup(payment_types[user_language], 2))
+    state.set(MyStates.payment_type_st)
+
+
+def pre_checkout_query(query,bot: TeleBot):
+    # print(query)
+    """
+    This function is called when the user enters their card information.
+    You need to check the correctness of the information and whether the order
+    for which the payment is being made still exists. If everything is correct, set ok=True, otherwise ok=False.
+    If there is an error, you can provide an optional error_message to explain the issue.
+    """
+    bot.answer_pre_checkout_query(query.id, ok=True)
+def successful_payment_payme(message: Message, bot: TeleBot, user_language: str, state: StateContext):
+    Latitude = return_data(message, bot, 'latitude')
+    Longitude = return_data(message, bot, 'longitude')
+    comments = return_data(message, bot, 'comments')
+    branch = return_data(message, bot, 'branch')
+    payment = return_data(message, bot, 'payment')
+
+
+    db = SQLite()
+    rows = db.get_user_basket(message.from_user.id, user_language)
+    dates, timess = date_and_time()
+    branch_d = location_without_emoji(branch)
+    order_number = db.get_order_number()
+    print(order_number)
+    # if order_number:
+    #     order_number = order_number + 1
+    # else:
+    #     order_number = 1
+    # print(order_number)
+    silka = mention_or_silka(message)
+
+
+    order_type = return_data(message, bot, 'order_type')
+    s = total_cost(rows, user_language)
+
+    if order_type in ['🚶 Borib olish', '🚶 Самовывоз']:
+        text, formatted_number2 = check_pickup(rows, user_language)
+        adrdress_phone = '📱 Telefon nomer: ' + str(
+            return_data(message, bot, 'phone_number'))
+
+        groups_txt = group_pickup_txt.format(order_number, text, formatted_number2,payment, adrdress_phone,
+                         comments, silka)
+        final = final_message_pickup[user_language].format(
+            order_number,  # 🆔
+            text or "",  # 🧾 buyurtmalar
+            formatted_number2,  # 💰 jami
+            return_data(message, bot, 'phone_number'),  # 📞
+            dates,  # 📅 sana
+            timess,  # 🕔 vaqt
+            comments or "-",  # 💬 komment
+            payment_to_txt(payment) or "-"  # 💰 to‘lov turi
+        )
+
+    else:
+        distance = return_data(message, bot, 'closest_km')
+
+        bot.send_location(-1003871440267, Latitude,
+                          Longitude)
+        yax = return_data(message, bot, 'closest_km')
+        bot.send_message(-1003871440267, f"🗣 Fillialdan klientgacha bo'lgan <b>masofa 📍 {yax} km</b>")
+        adrdress_phone = "📍Address: " + str(return_data(message, bot, 'location')) + '\n' + '📱 Telefon nomer: ' + str(
+            return_data(message, bot, 'phone_number'))
+
+        text, formatted_number2, formatted_number3 = check(rows, user_language, distance)
+        adding_st = db.get_user_basket(message.from_user.id, 'uz')
+        final = final_message[user_language].format(
+            order_number,  # This is for 🆔
+            return_data(message, bot, 'phone_number'),  # Phone
+            return_data(message, bot, 'location'),  # Location
+            text,  # Some additional text
+            formatted_number3,  # Delivery cost
+            formatted_number2,  # Total cost
+            dates,  # Date
+            timess,  # Time
+            comments  # Comments
+        )
+
+        groups_txt = group_txt.format(
+            order=order_number,
+            items=text,
+            delivery=formatted_number3,
+            total=formatted_number2,
+            payment=payment_to_txt(payment),
+            address=adrdress_phone,
+            comment=comments or "-",
+            tg=silka
+        )
+
+
+
+        db.add_order(branch_d, order_number, "🤖 Telegram bot", "Jarayonda", payment_to_txt(payment), s,
+                     formatted_number3, timess, dates, "1000", comments,
+                     str(return_data(message, bot, 'location')), Longitude, Latitude,
+                     str(return_data(message, bot, 'phone_number')), yax, formatted_number2)
+
+    markup = pickup_orders_btn(message, order_number)
+    # db.register_addresses(return_data(message, bot, 'phone_number'),    return_data(message, bot, 'location'), Longitude, Latitude)
+
+    bot.send_message(-1003871440267,
+                         groups_txt,
+                         reply_markup=markup)
+
+    bot.send_message(message.from_user.id,
+                     final, reply_markup=reply_headers(user_language))
+    db.update_user_phone(message.from_user.id,  str(return_data(message, bot, 'phone_number')))
+    db.delete_basket_data(message.chat.id)
+    state.delete()
+    state.set(MyStates.headers_st)
+
+def admin_otkaz(call: CallbackQuery, bot: TeleBot):
+    chat_id = call.data.split("_")[0]
+    db = SQLite()
+    user_language = db.get_user_lang(chat_id)[0]
+    user_id = call.from_user.id
+    user_name = call.from_user.first_name
+    mention = "<a href='tg://user?id={}'>{}</a>".format(user_id, user_name)
+    if call.from_user.username == None:
+        users_names = mention
+    else:
+        users_names = f"@{call.from_user.username}"
+    # Send a message as a response to the callback query
+    bot.send_message(chat_id, admin_cancel[user_language])
+    bot.edit_message_reply_markup(call.message.chat.id, call.message.message_id, reply_markup=None)
+    bot.send_message(call.message.chat.id, f"❎ Bekor qilindi {users_names} tominidan",
+                     reply_to_message_id=call.message.message_id)
+
+def tasdiq(call: CallbackQuery, bot: TeleBot):
+    chat_id = call.data.split("_")[0]
+    user_id = call.from_user.id
+    user_name = call.from_user.first_name
+    mention = "<a href='tg://user?id={}'>{}</a>".format(user_id, user_name)
+    if call.from_user.username == None:
+        users_names = mention
+    else:
+        users_names = f"@{call.from_user.username}"
+    db = SQLite()
+    user_language = db.get_user_lang(chat_id)[0]
+    bot.send_message(call.message.chat.id, f"✅ Qabul qilindi {users_names} tomidan",
+                     reply_to_message_id=call.message.message_id)
+    bot.edit_message_reply_markup(call.message.chat.id, call.message.message_id, reply_markup=tasdiq_btn(chat_id))
+    bot.send_message(chat_id, send_admin_right[user_language])
+
+def finish_user(call: CallbackQuery, bot: TeleBot):
+    bot.edit_message_reply_markup(call.message.chat.id, call.message.message_id, reply_markup=None)

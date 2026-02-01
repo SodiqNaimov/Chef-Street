@@ -118,6 +118,14 @@ class Order(Base):
 
     def __repr__(self):
         return f"<Order(id={self.id}, branch='{self.branch_name}', number={self.order_number})>"
+
+class Admins(Base):
+    __tablename__ = 'admins'
+    id: Mapped[int] = mapped_column(primary_key=True)
+    user_id: Mapped[str]= mapped_column(TEXT, nullable=True)
+    name: Mapped[str] = mapped_column(TEXT, nullable=True)
+
+
 class SQLite:
     def __init__(self):
         self.engine = create_engine(f"sqlite:///{db_path}", echo=True)
@@ -127,7 +135,10 @@ class SQLite:
 
     def close(self):
         self.session.close()
-
+    def get_all_admin_id(self):
+        # Ensure order_number is a single value, not a tuple
+        row = self.session.query(Admins.user_id).all()
+        return row
     def register_user(self, user_id, lang, name):
         user = User(
             user_id=user_id,
@@ -598,4 +609,21 @@ class SQLite:
     def get_user_address(self, user_id):
         row = self.session.query(User.address).filter_by(user_id=user_id).first()
         return row.address if row else None
+    def get_join_stats_today(self, today):
+        return self.session.query(func.count(User.user_id)).filter(func.date(User.joined_date) == today).scalar()
+    def get_join_stats_date_joins(self, date):
+        return self.session.query(func.count(User.user_id)).filter(User.joined_date >= date).scalar()
+
+    def get_total_users(self):
+        return self.session.query(func.count(User.user_id)).scalar()
+    def get_user_info_rasilka_excel(self):
+        return self.session.query(
+            User.phone_number,
+            User.joined_date,
+            User.address,
+            User.long,
+
+            User.lang,
+
+        ).all()
 # SQLite()

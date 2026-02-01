@@ -48,6 +48,9 @@ def register_m_handler(func, state=None, text=None, commands=None, admin=None):
 
 
 def register_handlers():
+    ###########Admins
+    register_m_handler(open_admin, commands=['admin'])
+
     #Register
     register_m_handler(start_func, commands=['start'])
     register_m_handler(language, text=lang_msg, state=Register.lang_st)
@@ -105,11 +108,12 @@ def register_handlers():
     register_m_handler(back_payment,text=["⬅️ Ortga", "⬅️ Назад"], state=MyStates.payment_type_st)
 
     register_m_handler(payment_cash, text=['💵 Naqd', '💵 Наличные'], state=MyStates.payment_type_st)
-    register_m_handler(click_payment, text=['💳 Click'], state=MyStates.payment_type_st)
-
+    register_m_handler(click_payment, text=['💳 Click','💳 Payme'], state=MyStates.payment_type_st)
+    register_m_handler(back_from_online_payment,text=["⬅️ Ortga", "⬅️ Назад"],state=MyStates.click_payment_st )
     register_m_handler(cancel_order, text=["❌ Rad etish", "❌ Отклонить"], state=MyStates.confirm_last_st)
     register_m_handler(accept_order, text=["✅ Tasdiqlash", "✅ Подтвердить"], state=MyStates.confirm_last_st)
 
+    bot.register_message_handler(successful_payment_payme, content_types=['successful_payment'], pass_bot=True)
 
 
     register_m_handler(back_products_user,text=["⬅️ Ortga", "⬅️ Назад"], state=MyStates.products_menu_st)
@@ -155,6 +159,10 @@ def register_handlers():
         func=lambda call: call.data in ('minus_product', 'add_product'),
         pass_bot=True
     )
+    bot.register_callback_query_handler(admin_otkaz, func=lambda call: call.data.endswith("_otkaz"), pass_bot=True)
+    bot.register_callback_query_handler(tasdiq, func=lambda call: call.data.endswith("_tasdiqlash"), pass_bot=True)
+    bot.register_callback_query_handler(finish_user, func=lambda call: call.data.endswith("_tugatildi"), pass_bot=True)
+
     bot.register_callback_query_handler(save, func=lambda call: call.data.startswith("save_"), pass_bot=True)
     bot.register_callback_query_handler(enter_number_by_handle, func=lambda call: call.data.startswith("entern_"), pass_bot=True)
     bot.register_callback_query_handler(previous_and_next, func=lambda call: call.data in ('previous', 'next'), pass_bot=True)
@@ -162,7 +170,14 @@ def register_handlers():
                                         pass_bot=True)
     bot.register_callback_query_handler(save_edit_basket, func=lambda call: call.data.startswith("saves_"), pass_bot=True)
     bot.register_callback_query_handler(back_from_basket, func=lambda call: call.data == "basket_back", pass_bot=True)
+    bot.register_pre_checkout_query_handler(pre_checkout_query,func=lambda query: True,pass_bot=True)
 
+    register_m_handler(users_count, text="👤 Foydalanuvchilar soni", state=Panel.open_admin_st)
+    register_m_handler(information_about_user, text="👤 Foydalanuvchilar haqida ma'lumot", state=Panel.open_admin_st)
+    register_m_handler(send_rassilka, text="✏️ Foydalanuvchilarga xabar yuborish", state=Panel.open_admin_st)
+    register_m_handler(back_send_rassilka, text="⬅️ Ortga", state=Panel.send_rassilka_st)
+    register_m_handler(rassilka, state=Panel.send_rassilka_st)
+    register_m_handler(confirm_rasilka, text=["✅ Ha", "❌ Yo'q"], state=Panel.confirm_rasilka_st)
 
 def run():
     bot.infinity_polling(skip_pending=True, logger_level=logging.INFO)

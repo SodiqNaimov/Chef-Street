@@ -160,3 +160,8 @@ send_location_txt = {"uz" :"Yetkazib berish manzilingizni lokatsiyasini yuboring
 payment_button_messsage = {"uz":"To'lov qilish uchun tugma ustiga bosing 👇🏻",
                "ru":"Нажмите на кнопку для оплаты 👇🏻",
               "en":"Select a section 👇🏻"}
+
+admin_cancel = {"uz": "❌ Buyurtmaningiz bekor qilindi! 😔",
+                 "ru": "❌ Ваш заказ отменен! 😔"}
+send_admin_right = {"uz": "Buyurtmangiz qabul qilindi.Tez orada operatorlarimiz siz bilan aloqaga chiqishadi.😊",
+                    "ru": "Ваш заказ принят. Наши операторы скоро свяжутся с вами.😊"}

@@ -23,6 +23,8 @@ locations = [
     ("📍 Chef Street Koloxoz", "📍 Chef Street Колхоз",39.781011, 64.403939)
 
 ]
+from datetime import datetime, timedelta, date# import pytz
+
 # Alternative way to get one requirement data
 def return_data(message, bot, word):
     with bot.retrieve_data(message.from_user.id, message.chat.id) as data:
@@ -188,11 +190,11 @@ def only_between_11_and_00(func):
     def wrapper(message: Message, bot:TeleBot, state: StateContext, user_language:str):
         now = datetime.now(ZoneInfo("Asia/Tashkent")).time()
         start = time(9, 0)
-        end = time(2,0)
-        closed_work = {"uz": "❗️ Yetkazib berish xizmatimiz soat 11:00 dan 01:00gacha ishlaydi!",
-                       "ru"  : "❗️Наша служба доставки работает с 11:00 до 01:00!"}
+        end = time(19,0)
+        closed_work = {"uz": "❗️ Yetkazib berish xizmatimiz soat 08:00 dan 19:00gacha ishlaydi!",
+                       "ru"  : "❗️Наша служба доставки работает с 08:00 до 19:00!"}
         if start <= now or now <= end:
-            return func(message, bot,user_language, state)
+            return func(message, bot, state, user_language)
         else:
             bot.send_message(message.from_user.id, closed_work[user_language])
     return wrapper
@@ -201,9 +203,9 @@ def only_between_11_and_00_simple(func):
     def wrapper(message: Message, bot:TeleBot, state: StateContext, user_language:str):
         now = datetime.now(ZoneInfo("Asia/Tashkent")).time()
         start = time(9, 0)
-        end = time(2,0)
-        closed_work = {"uz": "❗️ Yetkazib berish xizmatimiz soat 11:00 dan 01:00gacha ishlaydi!",
-                       "ru"  : "❗️Наша служба доставки работает с 11:00 до 01:00!"}
+        end = time(19,0)
+        closed_work = {"uz": "❗️ Yetkazib berish xizmatimiz soat 08:00 dan 19:00gacha ishlaydi!",
+                       "ru"  : "❗️Наша служба доставки работает с 08:00 до 19:00!"}
         if start <= now or now <= end:
             return func(message, bot, state)
         else:
@@ -276,3 +278,14 @@ def send_address(latitude, longitude, language):
     except requests.exceptions.RequestException as e:
         print(f"Request failed: {e}")
         return None
+def statistics_join():
+    today = datetime.now().date()
+    one_week_ago = today - timedelta(days=7)
+    one_month_ago = today - timedelta(days=30)
+
+    db = SQLite()
+    today_joins = db.get_join_stats_today(today)
+    week_joins = db.get_join_stats_date_joins(one_week_ago)
+    month_joins = db.get_join_stats_date_joins(one_month_ago)
+
+    return today_joins, week_joins, month_joins
