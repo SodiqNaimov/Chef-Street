@@ -148,3 +148,23 @@ def tasdiq_btn(chat_id):
 
     markup.add(InlineKeyboardButton(text="❎ Bekor qilish", callback_data=str(chat_id) + "_otkaz"))
     return markup
+def admin_categories(lang):
+    db = SQLite()
+    categories = db.get_categories(lang)
+    markup = ReplyKeyboardMarkup(resize_keyboard=True, row_width=2)
+    markup.add(*back_btn[lang])
+    categories_list = []
+    for category in categories:
+        categories_list.append(category)
+    markup.add(*categories_list)
+    return markup
+def admin_products(lang):
+    db = SQLite()
+    categories = db.get_products(lang)
+    markup = ReplyKeyboardMarkup(resize_keyboard=True, row_width=2)
+    markup.add(*back_btn[lang])
+    categories_list = []
+    for category in categories:
+        categories_list.append(category)
+    markup.add(*categories_list)
+    return markup

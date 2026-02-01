@@ -19,6 +19,9 @@ from zoneinfo import ZoneInfo  # Python 3.9+
 
 # For getting lang
 set_user_lang = lambda text: 'ru' if text == lang_msg[1] else 'uz' if text == lang_msg[0] else None
+
+set_user_flag_lang = lambda text: lang_msg[1] if text == 'ru' else lang_msg[0] if text == 'uz' else None
+
 locations = [
     ("📍 Chef Street Koloxoz", "📍 Chef Street Колхоз",39.781011, 64.403939)
 
@@ -289,3 +292,39 @@ def statistics_join():
     month_joins = db.get_join_stats_date_joins(one_month_ago)
 
     return today_joins, week_joins, month_joins
+def check_admin_pr(rows):
+    text = ''
+    num = 1
+    lang ='uz'
+    # Example dictionary for sum_pul based on language
+
+    overall_cost = 0  # Initialize total cost
+    total_count =0
+    # Iterate through each row (product data)
+    for i in rows:
+        name = i[1]
+        count = i[2]
+        price = i[3]
+
+        try:
+            count = int(count)
+            price = int(price)
+            total_count += count
+        except ValueError:
+            print(f"Noto‘g‘ri qiymat: count={count}, price={price}")
+            continue
+
+        all_cost = price * count
+        formatted_number = "{:,.0f}".format(price).replace(",", " ")
+        formatted_number1 = "{:,.0f}".format(all_cost).replace(",", " ")
+
+        text += (f"{num}) <b>{name}</b>\n"
+                 f"{count} x <b>{formatted_number}</b><b> {sum_pul[lang]}</b> = "
+                 f"<b>{formatted_number1}</b><b> {sum_pul[lang]}</b>\n\n")
+        num += 1
+        overall_cost += all_cost
+    print(total_count)
+    formatted_overall = "{:,.0f}".format(overall_cost).replace(",", " ")
+    average_cost = overall_cost / total_count if total_count else 0
+    formatted_average = "{:,.0f}".format(average_cost).replace(",", " ")
+    return text, formatted_overall, total_count,formatted_average

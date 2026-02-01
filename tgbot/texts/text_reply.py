@@ -1,6 +1,6 @@
 lang_msg = ["🇺🇿O'zbek tili", "🇷🇺Pусский язык"]
 
-admin_btn = ["📊 Statistika", "👤 Foydalanuvchilar soni", "👤 Foydalanuvchilar haqida ma'lumot", "✏️ Foydalanuvchilarga xabar yuborish", "Mahsulotlar va Categoriyalar",  "🛵 Kuryerlar bo'limi", "❌ Buyurtmani bekor qilish", "🔄 Kuryerni almashtirish", "👨‍💻 Operatorlar bo'limi", "👨‍💻 Adminlar bo'limi", '🏢 Filliallar']
+admin_btn = ["📊 Statistika", "👤 Foydalanuvchilar soni", "👤 Foydalanuvchilar haqida ma'lumot", "✏️ Foydalanuvchilarga xabar yuborish", "Mahsulotlar va Categoriyalar", "👨‍💻 Adminlar bo'limi" ]
 order_btn = {"uz": ["🛍 Buyurtma berish"],
              "ru": ["🛍 Заказать"]}
 
@@ -73,3 +73,12 @@ not_location_btn = {"uz":["📍 Manzilni Qayta Yuborish 🔄", '⬅️ Ortga'],
 
 confirm_location_btn = {"uz": ["❌ Yo'q", "✅ Ha",  '⬅️ Ortga'],
                         "ru": ["❌ Нет", "✅ Да", '⬅️ Назад']}
+categories_and_products_btn = ["Categoriyalar", "Mahsulotlar", "⬅️ Ortga"]
+categories_panel_btn = ["➕ Categoriya qo'shish", "🔄 Categoriyani o'zgartirish", "❌ Categoriyani o'chirish", "⬅️ Ortga" ]
+uz_ru_flags = ["🇺🇿 o'zbekcha", "🇷🇺 Ruscha"]
+confirm_or_not = ["✅ Ha", "❌ Yo'q"]
+lang_msg_with_btn = ["🇺🇿O'zbek tili", "🇷🇺Pусский язык", "⬅️ Ortga"]
+products_panel_btn = ["➕ Mahsulot qo'shish", "🔄 Mahsulotni o'zgartirish", "❌ Mahsulotni o'chirish", "⬅️ Ortga"]
+edit_btn = [ "⬅️ Ortga", "💰 Mahsulot narxini o'zgartirish", "✏️ Mahsulot nomini o'zgartirish", "🗾 Mahsulot rasmini o'zgartirish"]
+statistics_btn = ["⬅️ Ortga", "Mahsulotlar statistikasi", "Filliallar statistikasi", "O'rtacha narx", "Kuryerlar statistikasi", "Operatorlar statistikasi"]
+today_btn = ["⬅️ Ortga","📆 Bugungi oy","📆 10 kunlik", "📆 Bugungi sana", "📆 Sanani kiritish"]

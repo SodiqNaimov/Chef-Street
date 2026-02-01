@@ -626,4 +626,106 @@ class SQLite:
             User.lang,
 
         ).all()
+    def add_categories_db(self, name_uz,  name_ru):
+        category = Category(
+            name_uz=name_uz,
+            name_ru=name_ru
+        )
+        self.session.add(category)
+        self.session.commit()
+
+    def get_category_choosed(self, lang, category_name):
+        if lang == "uz":
+            category = self.session.query(Category).filter(
+                (Category.name_uz == category_name)
+            ).first()
+        elif lang == "ru":
+            category = self.session.query(Category).filter(
+                (Category.name_ru == category_name)
+            ).first()
+        return category
+    def delete_products(self, category_id):
+        self.session.query(Product).filter_by(category_id=category_id).delete()
+        self.session.commit()
+    def delete_categories(self, category_id):
+        self.session.query(Category).filter_by(id=category_id).delete()
+        self.session.commit()
+    def update_category_name(self, lang: str, new_name: str, current_name: str):
+        """Update category name in specified language using SQLAlchemy.
+
+        Args:
+            lang: Language code ('uz' or 'ru')
+            new_name: New category name
+            current_name: Current category name to replace
+
+        Returns:
+            bool: True if update succeeded, False otherwise
+        """
+        session = self.session
+        try:
+            # Determine which column to update based on language
+            column_to_update = Category.name_uz if lang == 'uz' else Category.name_ru
+
+            # Create update statement
+            stmt = (
+                update(Category)
+                .where(column_to_update == current_name)
+                .values({column_to_update: new_name})
+                .execution_options(synchronize_session="fetch")
+            )
+
+            # Execute the update
+            result = session.execute(stmt)
+            session.commit()
+
+
+
+        except SQLAlchemyError as e:
+            session.rollback()
+            print(f"Error updating category name: {e}")
+            return False
+        finally:
+            session.close()
+    def delete_products_by_name(self, name_uz):
+        self.session.query(Product).filter_by(name_uz=name_uz).delete()
+        self.session.commit()
+    def add_products(self, category_id, name_uz, name_ru, price, image):
+        product = Product(
+            category_id=category_id,
+            name_ru=name_ru,
+            name_uz=name_uz,
+            price=price,
+            image=image
+
+        )
+        self.session.add(product)
+        self.session.commit()
+    def update_product(self, product_name, lang, update_data):
+        """
+        Update product fields dynamically using a dictionary.
+
+        :param product_name: Name of the product to update
+        :param lang: Language identifier for the column selection
+        :param update_data: Dictionary of fields to update
+        :return: Updated product object or None if product not found
+        """
+        try:
+            name_column = getattr(Product, f"name_{lang}")
+
+            product = self.session.query(Product).filter(name_column == product_name).first()
+            if not product:
+                return None  # Product not found
+
+            for key, value in update_data.items():
+                if hasattr(product, key):  # Ensure the attribute exists in the model
+                    setattr(product, key, value)
+
+            self.session.commit()
+            return product  # Return the updated product object
+
+        except SQLAlchemyError as e:
+            self.session.rollback()  # Rollback in case of an error
+            print(f"Error updating product {product_name}: {e}")  # Better to use logging
+            return None  # Return None to indicate failure
+
 # SQLite()

@@ -179,6 +179,82 @@ def register_handlers():
     register_m_handler(rassilka, state=Panel.send_rassilka_st)
     register_m_handler(confirm_rasilka, text=["✅ Ha", "❌ Yo'q"], state=Panel.confirm_rasilka_st)
 
+
+    register_m_handler(categories_and_products, text=["Mahsulotlar va Categoriyalar"], state=Panel.open_admin_st)
+    register_m_handler(back_send_rassilka, text="⬅️ Ortga", state=Panel.categories_and_products_st)
+    ###########Categories
+    register_m_handler(categories_func, text=["Categoriyalar"], state=Panel.categories_and_products_st)
+    register_m_handler(back_categories_func, text="⬅️ Ortga", state=Panel.categories_func_st)
+    #############Add categories
+    register_m_handler(add_categories, text="➕ Categoriya qo'shish", state=Panel.categories_func_st)
+    register_m_handler(back_add_categories, text="⬅️ Ortga", state=Panel.add_categories_st)
+    register_m_handler(add_categories_ru, state=Panel.add_categories_st)
+    register_m_handler(back_add_categories_ru, text="⬅️ Ortga", state=Panel.add_categories_ru)
+    register_m_handler(add_categories_to_database, state=Panel.add_categories_ru)
+    ###################Delete categories
+    register_m_handler(delete_categories,text="❌ Categoriyani o'chirish", state=Panel.categories_func_st)
+    register_m_handler(back_add_categories, text="⬅️ Ortga", state=Panel.delete_categories_st)
+    register_m_handler(ask_delete_categories, state=Panel.delete_categories_st)
+    register_m_handler(confirm_or_not_func, text=confirm_or_not, state=Panel.ask_delete_categories_st)
+    ###################Change categories
+    register_m_handler(change_categories,text="🔄 Categoriyani o'zgartirish", state=Panel.categories_func_st)
+    register_m_handler(back_add_categories, text="⬅️ Ortga", state=Panel.change_categories_st)
+    register_m_handler(change_categories_lang, text=lang_msg, state=Panel.change_categories_st)
+    register_m_handler(back_add_change_categories_lang, text="⬅️ Ortga", state=Panel.change_categories_lang_st)
+    register_m_handler(ask_new_name, state=Panel.change_categories_lang_st)
+    register_m_handler(back_ask_new_name, text="⬅️ Ortga", state=Panel.ask_new_name_st)
+    register_m_handler(change_ask_new_name, state=Panel.ask_new_name_st)
+    ###########Products
+    register_m_handler(products_admin, text=["Mahsulotlar"], state=Panel.categories_and_products_st)
+    register_m_handler(back_categories_func, text="⬅️ Ortga", state=Panel.products_admin_st)
+    #############Delete products
+    register_m_handler(delete_products, text="❌ Mahsulotni o'chirish", state=Panel.products_admin_st)
+    register_m_handler(back_products_add_admin, text="⬅️ Ortga", state=Panel.delete_products_st)
+    register_m_handler(ask_delete_products,  state=Panel.delete_products_st)
+    register_m_handler(confirm_delete_pr_not_products, text=confirm_or_not, state=Panel.ask_delete_products_st)
+    #############Add products
+    register_m_handler(products_add_admin, text="➕ Mahsulot qo'shish", state=Panel.products_admin_st)
+    register_m_handler(back_products_add_admin, text="⬅️ Ortga", state=Panel.products_add_admin_st)
+    register_m_handler(add_product_name,  state=Panel.products_add_admin_st)
+    register_m_handler(back_add_product_name, text="⬅️ Ortga", state=Panel.add_product_name_st)
+    register_m_handler(add_product_name_ru,  state=Panel.add_product_name_st)
+    register_m_handler(back_add_product_name_ru, text="⬅️ Ortga", state=Panel.add_product_name_ru_st)
+    register_m_handler(add_price_product,  state=Panel.add_product_name_ru_st)
+    register_m_handler(back_add_price_product, text="⬅️ Ortga", state=Panel.add_price_product_st)
+    register_m_handler(add_image_product,  state=Panel.add_price_product_st)
+    register_m_handler(back_add_image_product, text="⬅️ Ortga", state=Panel.add_image_product_st)
+    bot.register_message_handler(add_products_database, state=Panel.add_image_product_st,content_types=['photo'],pass_bot=True)
+    #############Change products
+    register_m_handler(change_products, text="🔄 Mahsulotni o'zgartirish", state=Panel.products_admin_st)
+    register_m_handler(back_products_add_admin, text="⬅️ Ortga", state=Panel.change_products_st)
+    register_m_handler(choose_lange_change_product, text=lang_msg, state=Panel.change_products_st)
+    register_m_handler(back_choose_lange_change_product, text="⬅️ Ortga", state=Panel.choose_lange_change_product)
+    register_m_handler(choose_edit_btn,  state=Panel.choose_lange_change_product)
+    register_m_handler(back_choose_edit_btn, text="⬅️ Ortga", state=Panel.choose_edit_btn_st)
+    #############Change price
+    register_m_handler(price_choose_edit_btn, text="💰 Mahsulot narxini o'zgartirish", state=Panel.choose_edit_btn_st)
+    register_m_handler(back_price_choose_edit_btn, text="⬅️ Ortga", state=Panel.price_choose_edit_btn_st)
+    register_m_handler(change_price, state=Panel.price_choose_edit_btn_st)
+    #############Change image
+    register_m_handler(price_image_edit_btn, text="🗾 Mahsulot rasmini o'zgartirish", state=Panel.choose_edit_btn_st)
+    register_m_handler(back_price_choose_edit_btn, text="⬅️ Ortga", state=Panel.price_image_edit_btn)
+    bot.register_message_handler(change_image_from_db, state=Panel.price_image_edit_btn, content_types=['photo'], pass_bot=True)
+    #############Change name
+    register_m_handler(change_name_product, text="✏️ Mahsulot nomini o'zgartirish",  state=Panel.choose_edit_btn_st)
+    register_m_handler(back_price_choose_edit_btn, text="⬅️ Ortga", state=Panel.change_name_product_st)
+    register_m_handler(change_from_db_name,  state=Panel.change_name_product_st)
+
+    register_m_handler(statistica, text="📊 Statistika", state=Panel.open_admin_st)
+    register_m_handler(back_send_rassilka, text="⬅️ Ortga", state=Panel.statistica_st)
+    register_m_handler(products_statistika, text= "Mahsulotlar statistikasi", state=Panel.statistica_st)
+    register_m_handler(back_statistica, text="⬅️ Ortga", state=Panel.products_statistika_st)
+
+    register_m_handler(get_end_time,  state=Panel.products_statistika_st)
+    register_m_handler(back_get_end_time, text="⬅️ Ortga", state=Panel.get_end_time_statistics_st)
+    register_m_handler(back_get_end_time, text="⬅️ Ortga", state=Panel.get_one_filter_product_date_st)
+    register_m_handler(send_one_filtered_date, state=Panel.get_one_filter_product_date_st)
+    register_m_handler(send_product_with_end_time, state=Panel.get_end_time_statistics_st)
+
 def run():
     bot.infinity_polling(skip_pending=True, logger_level=logging.INFO)
 
