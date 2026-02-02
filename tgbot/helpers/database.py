@@ -184,6 +184,13 @@ class SQLite:
             self.session.rollback()
             print(f"Error updating user address: {e}")
             raise
+    def register_admin(self, user_id,  name):
+        user = Admins(
+            user_id=user_id,
+            name=name
+        )
+        self.session.add(user)
+        self.session.commit()
     def generate_today_stats(self, branch_names):
         """Generate today's statistics for specified branches"""
         uzbek_tz = timezone(timedelta(hours=5))
@@ -1979,5 +1986,16 @@ class SQLite:
         except Exception as e:
             print(f"Statistika yaratishda xatolik: {str(e)}")
             return []
+    def get_all_admin_names(self) -> list[str]:
+        admins = self.session.query(Admins).all()
+        return [admin.name for admin in admins if admin.name]
+    def delete_admin_by_name(self, name: str) -> bool:
+        admin = self.session.query(Admins).filter_by(name=name).first()
+        if admin:
+            self.session.delete(admin)
+            self.session.commit()
+            return True
+        return False
+
 
 # SQLite()

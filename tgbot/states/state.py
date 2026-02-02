@@ -38,6 +38,10 @@ class Panel(StatesGroup):
     average_count_st = State()
     get_start_avaerage_count_st = State()
     get_one_average_sum_st = State()
+    status_st = State()
+    admins_func_st = State()
+    delete_admin_by_name_st = State()
+    ask_delete_admin_st=  State()
 #For user's dashboard
 class MyStates(StatesGroup):
     headers_st = State()

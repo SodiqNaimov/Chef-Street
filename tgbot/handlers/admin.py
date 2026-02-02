@@ -5,7 +5,7 @@ from telebot.types import *  # ReplyKeyboardRemove, CallbackQuery
 from telebot.states.sync.context import StateContext
 
 from tgbot.helpers.small_function import statistics_join, return_data, set_user_lang, set_user_flag_lang, \
-    check_admin_pr, check_admin_by_date_product
+    check_admin_pr, check_admin_by_date_product, mention_or_silka
 from tgbot.states.state import Panel
 import pytz
 # messages
@@ -17,7 +17,7 @@ from tgbot.texts.text_reply import *
 
 # for use database
 from tgbot.helpers.database import SQLite
-
+status_name = {}
 import pandas as pd
 import time
 def open_admin(message: Message, bot: TeleBot, state: StateContext):
@@ -783,3 +783,82 @@ def send_end_date_avaerage_count(message: Message, bot: TeleBot, state: StateCon
     end_date = datetime.strptime(message.text, "%Y-%m-%d").date()
     db.send_period_summary(["Chef Street Koloxoz"], start_date, end_date, bot, message)
     open_admin(message, bot, state)
+
+def new_status(message: Message, bot: TeleBot):
+    silka = mention_or_silka(message)
+    db = SQLite()
+    admin_ids_raw = db.get_all_admin_id()
+    for i in admin_ids_raw:
+        try:
+            bot.send_message(i[0], f"Yangi status bo'yicha so'rov keldi:\n\n{message.from_user.first_name}\n{silka}",
+                             reply_markup=status_btn(message.from_user.id))
+        except Exception as e:
+            print(e)
+
+def get_admin_name(call: CallbackQuery, bot: TeleBot, state: StateContext):
+    status_id = call.data.split('_')[2]
+    stat = call.data
+    lines = call.message.text.split('\n')
+    if len(lines) >= 3:
+        user_first_name = lines[1]
+        silka = lines[2]
+    else:
+        user_first_name = "Noma'lum"
+        silka = "Noma'lum"
+    status_name[call.from_user.id] = {'status': '', 'status_id': '', 'text': '', 'm_id': '', 'first_name': user_first_name, 'silka': silka, "message_id": ""}
+    status_name[call.from_user.id]['status'] = stat
+    status_name[call.from_user.id]['status_id'] = status_id
+    status_name[call.from_user.id]['text'] = call.message.text
+    m = bot.edit_message_text(chat_id=call.message.chat.id, text=call.message.text + "\n\n<b>👮 Admin nomini yuboring.</b>", message_id=call.message.message_id, reply_markup=back_inline())
+    status_name[call.from_user.id]["message_id"] = m.message_id
+    state.set(Panel.status_st)
+
+def back_to_status(call: CallbackQuery, bot: TeleBot):
+    print(status_name[call.from_user.id]['text'])
+    bot.edit_message_text(chat_id=call.message.chat.id, message_id=call.message.message_id, text=status_name[call.from_user.id]['text'], reply_markup=status_btn(status_name[call.from_user.id]['status_id']))
+def admins_func(message: Message, bot: TeleBot, state: StateContext):
+    bot.send_message(message.from_user.id, "Quyidagilardan birini tanlang 👇", reply_markup=reply_markup(admins_list_btn, 2))
+    state.set(Panel.admins_func_st)
+def add_admine(message: Message, bot: TeleBot):
+    bot.edit_message_reply_markup(chat_id=message.chat.id, message_id=status_name[message.from_user.id]["message_id"], reply_markup=None)
+    db = SQLite()
+    db.register_admin(status_name[message.from_user.id]['status_id'], message.text)
+    bot.send_message(message.from_user.id, f"Foydalanuvchi <b>{message.text}</b> admin etib tayinlandi.")
+    bot.send_message(status_name[message.from_user.id]['status_id'], f"Assalomu Aleykum.Adminlikga xush kelibsiz!.\n\nIltimos tugmalardan foydalanish uchun /start tugmani bosing.\nKeyin /admin kommandasini yuboring", reply_markup=reply_markup(admin_btn, 2))
+def bekor_status(call: CallbackQuery, bot: TeleBot):
+    bot.edit_message_reply_markup(chat_id=call.message.chat.id, message_id=call.message.message_id, reply_markup=None)
+
+def admins_func(message: Message, bot: TeleBot, state: StateContext):
+    bot.send_message(message.from_user.id, "Quyidagilardan birini tanlang 👇", reply_markup=reply_markup(admins_list_btn, 2))
+    state.set(Panel.admins_func_st)
+
+def list_of_admins(message: Message, bot: TeleBot, state: StateContext):
+    db = SQLite()
+    admin_names= db.get_all_admin_names()
+    if admin_names:
+        response = "👮‍♂️ Adminlar ro'yxati:\n\n" + "\n".join(f"• {name}" for name in admin_names)
+    else:
+        response = "Hozircha hech qanday admin mavjud emas."
+    bot.send_message(message.chat.id, response)
+    open_admin(message, bot, state)
+
+def delete_admin_by_name(message: Message, bot: TeleBot, state: StateContext):
+    bot.send_message(message.from_user.id, "O'chirmoqchi bo'lgan admin nomini tanlang  👇", reply_markup=admins_list_reply())
+    state.set(Panel.delete_admin_by_name_st)
+
+def ask_delete_admin(message: Message, bot: TeleBot, state: StateContext):
+    state.set(Panel.ask_delete_admin_st)
+    state.add_data(admin_name= message.text)
+    bot.send_message(message.from_user.id, f"<b>{message.text}</b> adminlik safidan chiqarmoqchimisiz?", reply_markup=reply_markup(["✅ Ha", "❌ Yo'q"], 2))
+def delete_or_not(message: Message, bot: TeleBot, state: StateContext):
+    if message.text=="❌ Yo'q":
+        bot.send_message(message.from_user.id, "O'chirmoqchi bo'lgan admin nomini tanlang  👇",
+                         reply_markup=admins_list_reply())
+        state.set(Panel.delete_admin_by_name_st)
+    else:
+        admin_name = return_data(message, bot, 'admin_name')
+        bot.send_message(message.from_user.id, f"<b>{admin_name}</b> adminlik safidan chiqarildi.")
+        db = SQLite()
+        db.delete_admin_by_name(admin_name)
+        state.delete()
+        open_admin(message, bot, state)

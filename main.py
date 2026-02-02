@@ -50,6 +50,11 @@ def register_m_handler(func, state=None, text=None, commands=None, admin=None):
 def register_handlers():
     ###########Admins
     register_m_handler(open_admin, commands=['admin'])
+    register_m_handler(new_status, commands=['status'])
+    bot.register_callback_query_handler(get_admin_name, func=lambda call: call.data.startswith('status_admin_'), pass_bot=True)
+    bot.register_callback_query_handler(back_to_status, func=lambda call: call.data == "ortga_status", pass_bot=True)
+    register_m_handler(add_admine, state=Panel.status_st)
+    bot.register_callback_query_handler(bekor_status, func=lambda call: call.data == "bekor_status", pass_bot=True)
 
     #Register
     register_m_handler(start_func, commands=['start'])
@@ -272,6 +277,16 @@ def register_handlers():
     register_m_handler(process_daily_date_input, state=Panel.get_one_average_sum_st)
 
     register_m_handler(send_end_date_avaerage_count, state=Panel.get_start_avaerage_count_st)
+
+
+    register_m_handler(admins_func, text="👨‍💻 Adminlar bo'limi", state=Panel.open_admin_st)
+    register_m_handler(back_send_rassilka, text="⬅️ Ortga", state=Panel.admins_func_st)
+    register_m_handler(list_of_admins, text="👁 Adminlar ro'yxatini ko'rish", state=Panel.admins_func_st)
+    register_m_handler(delete_admin_by_name, text="🗑 Adminni o'chirish", state=Panel.admins_func_st)
+    register_m_handler(admins_func, text="⬅️ Ortga", state=Panel.delete_admin_by_name_st)
+    register_m_handler(ask_delete_admin,state=Panel.delete_admin_by_name_st )
+    register_m_handler(delete_or_not,text=["✅ Ha", "❌ Yo'q"],state=Panel.ask_delete_admin_st )
+
 
 def run():
     bot.infinity_polling(skip_pending=True, logger_level=logging.INFO)

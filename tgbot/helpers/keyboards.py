@@ -168,3 +168,26 @@ def admin_products(lang):
         categories_list.append(category)
     markup.add(*categories_list)
     return markup
+def status_btn(message):
+    markup = InlineKeyboardMarkup(row_width=1)
+    button1 = InlineKeyboardButton(text="✅ Qabul qilish", callback_data=f'status_admin_{message}')
+    button2 = InlineKeyboardButton(text="❌ Rad etish", callback_data=f'bekor_status')
+
+    markup.add(button1, button2)
+    return markup
+def back_inline():
+    markup = InlineKeyboardMarkup(row_width=1)
+    button1 = InlineKeyboardButton(text="⬅️ Ortga", callback_data=f'ortga_status')
+
+    markup.add(button1)
+    return markup
+def admins_list_reply():
+    db = SQLite()
+    admin_names = db.get_all_admin_names()
+    admins_list = []
+    markup = ReplyKeyboardMarkup(resize_keyboard=True,  row_width=2)
+    markup.add(*back_btn['uz'])
+    for i in admin_names:
+        admins_list.append(i)
+    markup.add(*admins_list)
+    return markup

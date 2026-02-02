@@ -82,3 +82,4 @@ products_panel_btn = ["➕ Mahsulot qo'shish", "🔄 Mahsulotni o'zgartirish", "
 edit_btn = [ "⬅️ Ortga", "💰 Mahsulot narxini o'zgartirish", "✏️ Mahsulot nomini o'zgartirish", "🗾 Mahsulot rasmini o'zgartirish"]
 statistics_btn = ["⬅️ Ortga", "Mahsulotlar statistikasi", "Filliallar statistikasi", "O'rtacha narx"]
 today_btn = ["⬅️ Ortga","📆 Bugungi oy","📆 10 kunlik", "📆 Bugungi sana", "📆 Sanani kiritish"]
+admins_list_btn = ["👁 Adminlar ro'yxatini ko'rish", "🗑 Adminni o'chirish", "⬅️ Ortga"]
