@@ -4,12 +4,13 @@ from telebot.types import *  # ReplyKeyboardRemove, CallbackQuery
 # for state
 from telebot.states.sync.context import StateContext
 
-from tgbot.helpers.small_function import statistics_join, return_data, set_user_lang, set_user_flag_lang, check_admin_pr
+from tgbot.helpers.small_function import statistics_join, return_data, set_user_lang, set_user_flag_lang, \
+    check_admin_pr, check_admin_by_date_product
 from tgbot.states.state import Panel
-
+import pytz
 # messages
 from tgbot.texts.admin_message import *
-
+from datetime import datetime
 # for use keyboards
 from tgbot.helpers.keyboards import *  # , inline_markup
 from tgbot.texts.text_reply import *
@@ -487,57 +488,298 @@ def back_statistica(message: Message, bot: TeleBot, state: StateContext):
     state.set(Panel.statistica_st)
 def get_end_time(message: Message, bot: TeleBot, state: StateContext):
     if message.text == "📆 Bugungi oy":
-        sales_data1 = SQLite().get_sales_by_branch_and_date("Original Xot Dog Yunusobod")
-        # print(sales_data1)
-        sales_data2 = SQLite().get_sales_by_branch_and_date("Original Xot Dog Ibn Sino")
-        print(sales_data2)
+        sales_data1 = SQLite().get_sales_by_branch_and_date("Chef Street Koloxoz")
         sales_data1, total_cost1, total_count, average_sum = check_admin_pr(sales_data1)
-        sales_data2, total_cost2, total_count2, average_sum2 = check_admin_pr(sales_data2)
         if sales_data1:
             bot.send_message(message.from_user.id,
-                             f"📆 Oylik statistika\n\nOriginal Xot Dog Yunusobod\n\nJami ketgan mahsulotlar soni: <b>{total_count}</b>\n\n{sales_data1}Jami: {total_cost1}\nO'rtacha narx: {average_sum}")
-        if sales_data2:
-            bot.send_message(message.from_user.id,
-                             f"📆 Oylik statistika\n\nOriginal Xot Dog Ibn Sino\n\nJami ketgan mahsulotlar soni: <b>{total_count2}</b>\n\n{sales_data2}Jami: {total_cost2}\nO'rtacha narx: {average_sum2}")
+                             f"📆 Oylik statistika\n\nChef Street Koloxoz\n\nJami ketgan mahsulotlar soni: <b>{total_count}</b>\n\n{sales_data1}Jami: {total_cost1}\nO'rtacha narx: {average_sum}")
 
 
         open_admin(message, bot, state)
     elif message.text == "📆 Bugungi sana":
-        sales_data1 = SQLite().get_todays_sales_by_branch("Original Xot Dog Yunusobod")
-        sales_data2 = SQLite().get_todays_sales_by_branch("Original Xot Dog Ibn Sino")
+        sales_data1 = SQLite().get_todays_sales_by_branch("Chef Street Koloxoz")
         utc_now = datetime.utcnow()
         uzbekistan_timezone = pytz.timezone('Asia/Tashkent')
         local_time = pytz.utc.localize(utc_now).astimezone(uzbekistan_timezone)
         today_date = local_time.date()
 
-        print(sales_data2)
         sales_data1, total_cost1, total_count, average_sum = check_admin_pr(sales_data1)
-        sales_data2, total_cost2, total_count2, average_sum2 = check_admin_pr(sales_data2)
         if sales_data1:
             bot.send_message(message.from_user.id,
-                             f"📆 {today_date}\n\nOriginal Xot Dog Yunusobod\n\nJami ketgan mahsulotlar soni: <b>{total_count}</b>\n\n{sales_data1}Jami: {total_cost1}\nO'rtacha narx: {average_sum}")
-        if sales_data2:
-            bot.send_message(message.from_user.id,
-                             f"📆 {today_date}\n\nOriginal Xot Dog Ibn Sino\n\nJami ketgan mahsulotlar soni: <b>{total_count2}</b>\n\n{sales_data2}Jami: {total_cost2}\nO'rtacha narx: {average_sum2}")
+                             f"📆 {today_date}\n\nChef Street Koloxoz\n\nJami ketgan mahsulotlar soni: <b>{total_count}</b>\n\n{sales_data1}Jami: {total_cost1}\nO'rtacha narx: {average_sum}")
+
         open_admin(message, bot, state)
     elif message.text == "📆 10 kunlik":
         # send_sales_report_to_telegram(message, bot, "Original Xot Dog Ibn Sino")
         db = SQLite()
-        report = db.get_last_10_days_sales_by_branch("Original Xot Dog Ibn Sino")
-        report2 = db.get_last_10_days_sales_by_branch("Original Xot Dog Yunusobod")
+        report = db.get_last_10_days_sales_by_branch("Chef Street Koloxoz")
 
         if report:
             bot.send_message(message.chat.id, report)
-        if report2:
-            bot.send_message(message.chat.id, report2)
         open_admin(message, bot, state)
     elif message.text == "📆 Sanani kiritish":
         bot.send_message(message.from_user.id, "Filtrlab olmoqchi bo'lgan sanani kiriting masalan: 01-12-2025.", reply_markup=reply_markup(back_btn['uz'], 1))
         state.set(Panel.get_one_filter_product_date_st)
     else:
         state.add_data(start_date=datetime.strptime(message.text, '%d-%m-%Y').date())
-        print(datetime.strptime(message.text, '%d-%m-%Y').date())
         bot.send_message(message.from_user.id,
                          "Tugash sananisini yuboring masalan: 01-12-2025.",
                          reply_markup=reply_markup(back_btn['uz'], 1))
         state.set(Panel.get_end_time_statistics_st)
+def back_get_end_time(message: Message, bot: TeleBot, state: StateContext):
+    bot.send_message(message.from_user.id,
+                     "Sananini yuboring masalan: 01.01.2025.\n\nYoki «📆 Bugungi sana» degan tugmani tanlang.",
+                     reply_markup=reply_markup(today_btn, 1))
+    state.set(Panel.products_statistika_st)
+
+def send_one_filtered_date(message: Message, bot: TeleBot, state: StateContext):
+    db = SQLite()
+    report = db.get_product_onedate_filter("Chef Street Koloxoz",message.text)
+    if report:
+        bot.send_message(message.chat.id, report)
+
+    state.delete()
+    open_admin(message, bot, state)
+
+def send_product_with_end_time(message: Message, bot: TeleBot, state: StateContext):
+    try:
+        # Get and validate dates
+
+        start_date = return_data(message, bot, 'start_date')
+        end_date = message.text
+
+        if not start_date or not end_date:
+            bot.send_message(message.from_user.id,
+                             "⚠️ Iltimos, boshlang'ich va tugash sanalarini to'liq kiriting!\n"
+                             "Masalan:\nBoshlang'ich: 08.04.2025\nTugash: 19.04.2025")
+            return
+
+        db = SQLite()
+        # Get all delivered orders in date range
+        items1 = db.get_sales_by_date_range('Chef Street Koloxoz', start_date, datetime.strptime(message.text, '%d-%m-%Y').date())
+        max_date1 = db.get_sales_by_branch_and_date_range_max('Chef Street Koloxoz', start_date,
+                                              datetime.strptime(message.text, '%d-%m-%Y').date())
+        print(items1)
+        sales_data1, total_cost1, total_count, average_sum = check_admin_by_date_product(items1['orders'])
+        if sales_data1:
+            bot.send_message(
+                                message.from_user.id,
+                                f"📆 {start_date.strftime('%d-%m-%Y')} > {max_date1.strftime('%d-%m-%Y')}\nFilial:Chef Street Koloxoz\n\nJami ketgan mahsulotlar soni: <b>{total_count}</b>\n\n{sales_data1}Jami: {total_cost1}\nO'rtacha narx: {average_sum}"
+                            )
+
+
+    except Exception as e:
+        bot.send_message(message.from_user.id,
+                         f"❌ Xatolik yuz berdi: {str(e)}")
+        print(f"Error in send_product_with_end_time: {e}")
+    finally:
+        open_admin(message, bot, state)
+def branch_statistics(message: Message, bot: TeleBot, state: StateContext):
+    bot.send_message(message.from_user.id,
+                     "Fillialar statistikani bilish uchun:  2025-01-01 yuboring.\n\nYoki «📆 Bugungi sana» yoki «📆 Bugungi oy» degan tugmani tanlang.",
+                     reply_markup=reply_markup(today_btn, 1))
+    state.set(Panel.branch_statistics_st)
+
+def get_this_month_branch_statistics(message: Message, bot: TeleBot, state: StateContext):
+    if message.text == "📆 Bugungi oy":
+        db = SQLite()
+        first_branch = db.generate_branch_stats(['Chef Street Koloxoz'])
+        try:
+            with open(first_branch[0], "rb") as file:
+                bot.send_document(message.from_user.id, file,
+                                  caption=f"📊 Отчет <b>Chef Street Koloxoz</b>")
+        except Exception as e:
+            print(e)
+        open_admin(message, bot, state)
+    elif message.text == "📆 Bugungi sana":
+        try:
+            # Get your database session
+            db = SQLite()
+            branches = ["Chef Street Koloxoz"]
+
+            stats_files = db.generate_today_stats(branches)
+
+            # Generate today's stats
+
+            if not stats_files:
+                bot.reply_to(message, "🛑 Bugun uchun buyurtmalar topilmadi!")
+                return
+
+            # Send each file
+            for branch_name, file_data in stats_files.items():
+                bot.send_chat_action(message.chat.id, 'upload_document')
+
+                # Create InputFile object (without filename parameter)
+                file_data['file'].seek(0)
+                file_to_send = InputFile(file_data['file'])
+
+                # Send document with visible_file_name in send_document
+                bot.send_document(
+                    chat_id=message.chat.id,
+                    document=file_to_send,
+                    visible_file_name=file_data['filename'])
+
+            bot.reply_to(message, "✅ Bugungi statistika barcha filiallar uchun yuborildi!")
+
+        except Exception as e:
+            bot.reply_to(message, f"⚠️ Xatolik yuz berdi: {str(e)}")
+
+        open_admin(message, bot, state)
+    elif message.text == "📆 10 kunlik":
+        try:
+            # Get your database session
+            db = SQLite()
+            branches = ["Chef Street Koloxoz"]
+
+            stats_files = db.generate_last_10days_stats_fillials(branches)
+
+            if not stats_files:
+                bot.reply_to(message, "🛑 So'nggi 10 kun uchun buyurtmalar topilmadi!")
+                return
+
+            # Send each file
+            for branch_name, file_data in stats_files.items():
+                bot.send_chat_action(message.chat.id, 'upload_document')
+
+                # Create InputFile object
+                file_data['file'].seek(0)
+                file_to_send = InputFile(file_data['file'])
+
+                # Send document
+                bot.send_document(
+                    chat_id=message.chat.id,
+                    document=file_to_send,
+                    visible_file_name=file_data['filename'])
+
+            bot.reply_to(message, "✅ So'nggi 10 kunlik statistika barcha filiallar uchun yuborildi!")
+
+        except Exception as e:
+            bot.reply_to(message, f"⚠️ Xatolik yuz berdi: {str(e)}")
+    elif message.text == "📆 Sanani kiritish":
+        bot.send_message(message.from_user.id, "Filtrlab olmoqchi bo'lgan sanani kiriting masalan: 2025-01-01.",
+                         reply_markup=reply_markup(back_btn['uz'], 1))
+        state.set(Panel.get_one_filter_branch_date_st)
+    else:
+        state.add_data(start_date=message.text)
+        bot.send_message(message.from_user.id, "Tugash sananisini yuboring masalan: 01.01.2025",
+                         reply_markup=reply_markup(back_btn['uz'], 1))
+        state.set(Panel.get_end_time_branch_st)
+
+def back_get_this_month_branch_statistics(message: Message, bot: TeleBot, state: StateContext):
+    bot.send_message(message.from_user.id,
+                     "Fillialar statistikani bilish uchun:  01.01.2025 yuboring.\n\nYoki «📆 Bugungi sana» yoki «📆 Bugungi oy» degan tugmani tanlang.",
+                     reply_markup=reply_markup(today_btn, 1))
+    state.set(Panel.branch_statistics_st)
+def filter_one_date_filter_branch(message: Message, bot: TeleBot, state: StateContext):
+    try:
+        # Validate date format
+        datetime.strptime(message.text, '%d.%m.%Y')
+
+        # Get your database session
+        db = SQLite()
+        branches = ["Chef Street Koloxoz"]
+
+        stats_files = db.generate_stats_for_date_branch(branches, message.text)
+
+        if not stats_files:
+            bot.reply_to(message, f"🛑 {message.text} sanasi uchun buyurtmalar topilmadi!")
+            return
+
+        # Send each file
+        for branch_name, file_data in stats_files.items():
+            # bot.send_chat_action(message.chat.id, 'upload_document')
+
+            # Create InputFile object
+            file_data['file'].seek(0)
+            file_to_send = InputFile(file_data['file'])
+
+            # Send document
+            bot.send_document(
+                chat_id=message.chat.id,
+                document=file_to_send,
+                visible_file_name=file_data['filename'])
+
+        bot.reply_to(message, f"✅ {message.text} sanasi uchun statistika barcha filiallar uchun yuborildi!")
+        state.delete()
+        open_admin(message, bot, state)
+    except ValueError:
+        bot.reply_to(message, "⚠️ Noto'g'ri sana formati! Iltimos, DD.MM.YYYY formatida kiriting.")
+        return
+
+    state.delete()
+    open_admin(message, bot, state)
+
+def send_branch_statistics(message: Message, bot: TeleBot, state: StateContext):
+    db = SQLite()
+    branches = ["Chef Street Koloxoz"]
+    start_date = return_data(message, bot, 'start_date')
+    db.generate_branch_stats_with_period(branches, start_date, message.text, bot, message)
+    # Send each file
+    # for file_info in stats_files:
+    #     file_info['file_data'].seek(0)
+    #     bot.send_document(
+    #         chat_id=message.chat.id,
+    #         document=InputFile(file_info['file_data'], filename=file_info['filename'])
+    #
+    #     )
+    # Send document with caption
+    # bot.send_document(
+    #     chat_id=message.chat.id,
+    #     document=excel_file)
+    open_admin(message, bot, state)
+def average_count(message: Message, bot: TeleBot, state: StateContext):
+    bot.send_message(message.from_user.id,
+                     "O'rtacha narxni bilish uchun: 2025-01-01 yuboring.\n\nYoki «📆 Bugungi sana» yoki «📆 Bugungi oy» degan tugmani tanlang.",
+                     reply_markup=reply_markup(today_btn, 1))
+    state.set(Panel.average_count_st)
+
+def get_start_avaerage_count(message: Message, bot: TeleBot, state: StateContext):
+    db = SQLite()
+
+    if message.text == "📆 Bugungi sana":
+        db.send_today_summary(["Chef Street Koloxoz"], bot, message)
+        state.delete()
+
+        open_admin(message, bot, state)
+    elif message.text == "📆 Bugungi oy":
+        db.send_monthly_summary(["Chef Street Koloxoz"], bot, message)
+        state.delete()
+
+        open_admin(message, bot, state)
+    elif message.text == "📆 10 kunlik":
+        db.send_last_10days_summary_branch(["Chef Street Koloxoz"], bot, message)
+        state.delete()
+        open_admin(message, bot, state)
+    elif message.text == "📆 Sanani kiritish":
+        bot.send_message(message.from_user.id, "Filter qilish uchun sanani kiriting: 01.01.2025", reply_markup=reply_markup(back_btn['uz'], 1))
+        state.set(Panel.get_one_average_sum_st)
+
+    else:
+        state.add_data(start_date=message.text)
+        bot.send_message(message.from_user.id, "Tugash sananisini yuboring masalan: 2025-12-01",
+                         reply_markup=reply_markup(back_btn['uz'], 1))
+        state.set(Panel.get_start_avaerage_count_st)
+
+def back_get_start_avaerage_count(message: Message, bot: TeleBot, state: StateContext):
+    bot.send_message(message.from_user.id,
+                     "O'rtacha narxni bilish uchun: 2025-01-01 yuboring.\n\nYoki «📆 Bugungi sana» yoki «📆 Bugungi oy» degan tugmani tanlang.",
+                     reply_markup=reply_markup(today_btn, 1))
+    state.set(Panel.average_count_st)
+def process_daily_date_input(message: Message, bot: TeleBot, state: StateContext):
+    # Get your database session
+    db = SQLite()
+    branches = ["Chef Street Koloxoz"]
+
+    # Call the function with user-provided date
+    db.send_daily_summary_branch(branches, bot, message, message.text)
+
+    state.delete()
+    open_admin(message, bot, state)
+def send_end_date_avaerage_count(message: Message, bot: TeleBot, state: StateContext):
+    db = SQLite()
+    start_date = return_data(message, bot, 'start_date')
+
+    start_date = datetime.strptime(start_date, "%Y-%m-%d").date()
+    end_date = datetime.strptime(message.text, "%Y-%m-%d").date()
+    db.send_period_summary(["Chef Street Koloxoz"], start_date, end_date, bot, message)
+    open_admin(message, bot, state)

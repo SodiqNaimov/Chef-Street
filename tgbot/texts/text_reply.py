@@ -1,6 +1,6 @@
 lang_msg = ["🇺🇿O'zbek tili", "🇷🇺Pусский язык"]
 
-admin_btn = ["📊 Statistika", "👤 Foydalanuvchilar soni", "👤 Foydalanuvchilar haqida ma'lumot", "✏️ Foydalanuvchilarga xabar yuborish", "Mahsulotlar va Categoriyalar", "👨‍💻 Adminlar bo'limi" ]
+admin_btn = ["📊 Statistika", "👤 Foydalanuvchilar soni", "👤 Foydalanuvchilar haqida ma'lumot", "✏️ Foydalanuvchilarga xabar yuborish", "Mahsulotlar va Categoriyalar", "👨‍💻 Adminlar bo'limi","📊 Statistika" ]
 order_btn = {"uz": ["🛍 Buyurtma berish"],
              "ru": ["🛍 Заказать"]}
 
@@ -80,5 +80,5 @@ confirm_or_not = ["✅ Ha", "❌ Yo'q"]
 lang_msg_with_btn = ["🇺🇿O'zbek tili", "🇷🇺Pусский язык", "⬅️ Ortga"]
 products_panel_btn = ["➕ Mahsulot qo'shish", "🔄 Mahsulotni o'zgartirish", "❌ Mahsulotni o'chirish", "⬅️ Ortga"]
 edit_btn = [ "⬅️ Ortga", "💰 Mahsulot narxini o'zgartirish", "✏️ Mahsulot nomini o'zgartirish", "🗾 Mahsulot rasmini o'zgartirish"]
-statistics_btn = ["⬅️ Ortga", "Mahsulotlar statistikasi", "Filliallar statistikasi", "O'rtacha narx", "Kuryerlar statistikasi", "Operatorlar statistikasi"]
+statistics_btn = ["⬅️ Ortga", "Mahsulotlar statistikasi", "Filliallar statistikasi", "O'rtacha narx"]
 today_btn = ["⬅️ Ortga","📆 Bugungi oy","📆 10 kunlik", "📆 Bugungi sana", "📆 Sanani kiritish"]

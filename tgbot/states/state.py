@@ -32,6 +32,12 @@ class Panel(StatesGroup):
     products_statistika_st = State()
     get_end_time_statistics_st = State()
     get_one_filter_product_date_st = State()
+    branch_statistics_st = State()
+    get_end_time_branch_st = State()
+    get_one_filter_branch_date_st = State()
+    average_count_st = State()
+    get_start_avaerage_count_st = State()
+    get_one_average_sum_st = State()
 #For user's dashboard
 class MyStates(StatesGroup):
     headers_st = State()

@@ -216,18 +216,15 @@ def only_between_11_and_00_simple(func):
     return wrapper
 
 def date_and_time():
-    # Get the current UTC time
-    utc_now = datetime.utcnow()
-
-    # Define the time zone for Uzbekistan
     uzbekistan_timezone = pytz.timezone('Asia/Tashkent')
 
-    # Localize the current time to Uzbekistan time zone
-    local_time = pytz.utc.localize(utc_now).astimezone(uzbekistan_timezone)
+    local_time = datetime.now(uzbekistan_timezone)
 
     formatted_date = local_time.strftime("%Y-%m-%d")
     formatted_time = local_time.strftime("%H:%M")
+
     return formatted_date, formatted_time
+
 
 def location_without_emoji(row):
     if row in ["📍 Chef Street Koloxoz","📍 Chef Street Колхоз"]:
@@ -328,3 +325,72 @@ def check_admin_pr(rows):
     average_cost = overall_cost / total_count if total_count else 0
     formatted_average = "{:,.0f}".format(average_cost).replace(",", " ")
     return text, formatted_overall, total_count,formatted_average
+def add_database_products_all(rows, order_number, user_id, branch_name, date):
+    db = SQLite()
+    for i in rows:
+        name = i[0]
+        count = i[1]
+        price = i[2]
+        all_cost = int(price) * int(i[1])
+
+        db.add_order_items(order_number, name, price,count, all_cost, user_id, branch_name, date)
+def check_admin_by_date_product(rows):
+    text = ''
+    num = 1
+    lang = 'uz'
+    overall_cost = 0  # Initialize total cost
+    total_count = 0
+
+    for i in rows:
+        name = i[1]
+        try:
+            count = int(i[2])
+            price = int(i[3])
+        except (TypeError, ValueError) as e:
+            print(f"Error converting count or price to integer: {e}, row: {i}")
+            continue  # Skip this row if conversion fails
+
+        # Recalculate total cost for this item
+        all_cost = count * price
+        overall_cost += all_cost
+        total_count += count
+
+        formatted_number = "{:,.0f}".format(price).replace(",", " ")
+        formatted_number1 = "{:,.0f}".format(all_cost).replace(",", " ")
+
+        text += (f"{num}) <b>{name}</b>\n"
+                 f"{count} x <b>{formatted_number}</b> {sum_pul[lang]} = "
+                 f"<b>{formatted_number1}</b> {sum_pul[lang]}\n\n")
+
+        num += 1
+
+    formatted_overall = "{:,.0f}".format(overall_cost).replace(",", " ")
+    average_cost = overall_cost / total_count if total_count else 0
+    formatted_average = "{:,.0f}".format(average_cost).replace(",", " ")
+
+    return text, formatted_overall, total_count, formatted_average
+def build_order_text(rows):
+    text = ''
+    overall_cost = []
+    num = 1
+
+    for row in rows:
+        name = row[0]
+        count = int(row[1])
+        price = int(row[2])
+
+        all_cost = price * count
+        overall_cost.append(int(row[3]))
+
+        formatted_price = "{:,.0f}".format(price).replace(",", " ")
+        formatted_all_cost = "{:,.0f}".format(all_cost).replace(",", " ")
+
+        text += (
+            f"{num}) {name}\n"
+            f"   Miqdori: {count}\n"
+            f"   Narxi: {formatted_price}\n"
+            f"   Jami: {formatted_all_cost}\n\n"
+        )
+        num += 1
+
+    return text, overall_cost

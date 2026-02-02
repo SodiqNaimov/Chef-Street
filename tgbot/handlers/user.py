@@ -538,6 +538,7 @@ def accept_order(message: Message, bot: TeleBot, state: StateContext, user_langu
 
     order_type = return_data(message, bot, 'order_type')
     s = total_cost(rows, user_language)
+    adding_st = db.get_user_basket(message.from_user.id, 'uz')
 
     if order_type in ['🚶 Borib olish', '🚶 Самовывоз']:
         text, formatted_number2 = check_pickup(rows, user_language)
@@ -556,6 +557,8 @@ def accept_order(message: Message, bot: TeleBot, state: StateContext, user_langu
             comments or "-",  # 💬 komment
             payment_to_txt(payment) or "-"  # 💰 to‘lov turi
         )
+        formatted_number3 = 0
+        yax = 0
 
     else:
         distance = return_data(message, bot, 'closest_km')
@@ -592,12 +595,14 @@ def accept_order(message: Message, bot: TeleBot, state: StateContext, user_langu
             tg=silka
         )
 
+    adding_st = db.get_user_basket(message.from_user.id, 'uz')
 
+    add_database_products_all(adding_st, order_number, message.from_user.id, branch_d, dates)
 
-        db.add_order(branch_d, order_number, "🤖 Telegram bot", "Jarayonda", payment_to_txt(payment), s,
-                     formatted_number3, timess, dates, "1000", comments,
-                     str(return_data(message, bot, 'location')), Longitude, Latitude,
-                     str(return_data(message, bot, 'phone_number')), yax, formatted_number2)
+    db.add_order(branch_d, order_number, "🤖 Telegram bot", "Jarayonda", payment_to_txt(payment), s,
+                 formatted_number3, timess, dates, "1000", comments,
+                 str(return_data(message, bot, 'location')), Longitude, Latitude,
+                 str(return_data(message, bot, 'phone_number')), yax, formatted_number2)
 
     markup = pickup_orders_btn(message)
     # db.register_addresses(return_data(message, bot, 'phone_number'),    return_data(message, bot, 'location'), Longitude, Latitude)
@@ -806,7 +811,7 @@ def delete_basket_from_inline(call: CallbackQuery, bot: TeleBot):
         bot.set_state(call.from_user.id, MyStates.basket_user_st, call.message.chat.id)
 
 @only_between_11_and_00
-def delivery_func(message: Message, bot: TeleBot, user_language: str, state: StateContext):
+def delivery_func(message: Message, bot: TeleBot, state: StateContext,  user_language: str):
     state.add_data(order_type=message.text)
     bot.send_message(message.from_user.id, delivery_text[user_language],
                      reply_markup=delivery_address(user_language))
@@ -1000,16 +1005,19 @@ def click_payment(message: Message, bot: TeleBot, user_language: str, state: Sta
     db = SQLite()
     rows = db.get_user_basket(message.from_user.id, user_language)
 
-
     order_type = return_data(message, bot, 'order_type')
     distance = return_data(message, bot, 'closest_km')
     if order_type in ['🚶 Borib olish', '🚶 Самовывоз']:
+
         text, formatted_number2 = check_pickup(rows, user_language)
+        text = build_order_text(rows)
         total_amount = int(formatted_number2.replace(" ", "")) * 100
         description = text + "\n🚖 Yetkazib berish narxi: 5000 so'm"
 
     else:
         text, formatted_number2, formatted_number3 = check(rows, user_language, distance)
+        text = build_order_text(rows)
+
         print(formatted_number2)
         total_amount = int(formatted_number2.replace(" ", "")) * 100
         description = text
@@ -1089,6 +1097,7 @@ def successful_payment_payme(message: Message, bot: TeleBot, user_language: str,
 
     order_type = return_data(message, bot, 'order_type')
     s = total_cost(rows, user_language)
+    adding_st = db.get_user_basket(message.from_user.id, 'uz')
 
     if order_type in ['🚶 Borib olish', '🚶 Самовывоз']:
         text, formatted_number2 = check_pickup(rows, user_language)
@@ -1107,6 +1116,8 @@ def successful_payment_payme(message: Message, bot: TeleBot, user_language: str,
             comments or "-",  # 💬 komment
             payment_to_txt(payment) or "-"  # 💰 to‘lov turi
         )
+        formatted_number3 = 0
+        yax = 0
 
     else:
         distance = return_data(message, bot, 'closest_km')
@@ -1143,14 +1154,15 @@ def successful_payment_payme(message: Message, bot: TeleBot, user_language: str,
             tg=silka
         )
 
+    add_database_products_all(adding_st, order_number, message.from_user.id, branch_d, dates)
 
 
-        db.add_order(branch_d, order_number, "🤖 Telegram bot", "Jarayonda", payment_to_txt(payment), s,
-                     formatted_number3, timess, dates, "1000", comments,
-                     str(return_data(message, bot, 'location')), Longitude, Latitude,
-                     str(return_data(message, bot, 'phone_number')), yax, formatted_number2)
+    db.add_order(branch_d, order_number, "🤖 Telegram bot", "Jarayonda", payment_to_txt(payment), s,
+                 formatted_number3, timess, dates, "1000", comments,
+                 str(return_data(message, bot, 'location')), Longitude, Latitude,
+                 str(return_data(message, bot, 'phone_number')), yax, formatted_number2)
 
-    markup = pickup_orders_btn(message, order_number)
+    markup = pickup_orders_btn(message)
     # db.register_addresses(return_data(message, bot, 'phone_number'),    return_data(message, bot, 'location'), Longitude, Latitude)
 
     bot.send_message(-1003871440267,
@@ -1199,3 +1211,4 @@ def tasdiq(call: CallbackQuery, bot: TeleBot):
 
 def finish_user(call: CallbackQuery, bot: TeleBot):
     bot.edit_message_reply_markup(call.message.chat.id, call.message.message_id, reply_markup=None)
+

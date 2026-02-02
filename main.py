@@ -248,12 +248,30 @@ def register_handlers():
     register_m_handler(back_send_rassilka, text="⬅️ Ortga", state=Panel.statistica_st)
     register_m_handler(products_statistika, text= "Mahsulotlar statistikasi", state=Panel.statistica_st)
     register_m_handler(back_statistica, text="⬅️ Ortga", state=Panel.products_statistika_st)
-
+    #
     register_m_handler(get_end_time,  state=Panel.products_statistika_st)
     register_m_handler(back_get_end_time, text="⬅️ Ortga", state=Panel.get_end_time_statistics_st)
     register_m_handler(back_get_end_time, text="⬅️ Ortga", state=Panel.get_one_filter_product_date_st)
     register_m_handler(send_one_filtered_date, state=Panel.get_one_filter_product_date_st)
     register_m_handler(send_product_with_end_time, state=Panel.get_end_time_statistics_st)
+
+    register_m_handler(branch_statistics, text= "Filliallar statistikasi", state=Panel.statistica_st)
+    register_m_handler(back_statistica, text="⬅️ Ortga", state=Panel.branch_statistics_st)
+    register_m_handler(get_this_month_branch_statistics, state=Panel.branch_statistics_st)
+    register_m_handler(back_get_this_month_branch_statistics, text="⬅️ Ortga", state=Panel.get_one_filter_branch_date_st)
+    register_m_handler(back_get_this_month_branch_statistics, text="⬅️ Ortga", state=Panel.get_end_time_branch_st)
+    register_m_handler(filter_one_date_filter_branch, state=Panel.get_one_filter_branch_date_st)
+
+    register_m_handler(send_branch_statistics, state=Panel.get_end_time_branch_st)
+
+    register_m_handler(average_count, text= "O'rtacha narx", state=Panel.statistica_st)
+    register_m_handler(back_statistica, text="⬅️ Ortga", state=Panel.average_count_st)
+    register_m_handler(get_start_avaerage_count, state=Panel.average_count_st)
+    register_m_handler(back_get_start_avaerage_count, text="⬅️ Ortga", state=Panel.get_start_avaerage_count_st)
+    register_m_handler(back_get_start_avaerage_count, text="⬅️ Ortga", state=Panel.get_one_average_sum_st)
+    register_m_handler(process_daily_date_input, state=Panel.get_one_average_sum_st)
+
+    register_m_handler(send_end_date_avaerage_count, state=Panel.get_start_avaerage_count_st)
 
 def run():
     bot.infinity_polling(skip_pending=True, logger_level=logging.INFO)
@@ -270,9 +288,8 @@ bot.add_custom_filter(AdminFilter())
 # necessary for state parameter in handlers.
 bot.setup_middleware(LanguageMiddleware(bot))
 bot.setup_middleware(StateMiddleware(bot))
+if __name__ == "__main__":
+    set_commands(bot)
+    run()
 
-# For commands
-set_commands(bot)
 
-# Start polling
-run()

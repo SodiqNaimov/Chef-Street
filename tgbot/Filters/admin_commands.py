@@ -10,7 +10,7 @@ admins = [866489508, 766158313]
 
 
 def set_commands(bot: TeleBot) -> None:
-    # Set default commands for all users
+    # Default commands (all users)
     default_commands = [
         BotCommand(
             command="start",
@@ -19,7 +19,7 @@ def set_commands(bot: TeleBot) -> None:
     ]
     bot.set_my_commands(default_commands, scope=BotCommandScopeDefault())
 
-    # Set admin-specific commands for each admin
+    # Admin commands
     for admin in admins:
         try:
             admin_commands = [
@@ -32,6 +32,9 @@ def set_commands(bot: TeleBot) -> None:
                     description="Admin panelga kirish"
                 )
             ]
-            bot.set_my_commands(admin_commands, scope=BotCommandScopeChat(chat_id=str(admin[0])))
+            bot.set_my_commands(
+                admin_commands,
+                scope=BotCommandScopeChat(chat_id=admin)
+            )
         except Exception as e:
-            print(e)
+            print(f"Set command error for admin {admin}: {e}")
