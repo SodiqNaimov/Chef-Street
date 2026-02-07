@@ -1821,6 +1821,27 @@ class SQLite:
             }
         finally:
             session.close()
+    def get_products(self, lang):
+        """Get product categories in specified language.
+
+        Args:
+            lang: Language code ('uz', 'ru', or 'en')
+
+        Returns:
+            List of category names
+        """
+        lang = lang.lower()
+        if lang not in ('uz', 'ru', 'en'):
+            lang = 'en'  # Default to English
+
+        column = getattr(Product, f"name_{lang}")
+        print(column)
+        try:
+            categories = self.session.query(column).distinct().all()
+            return [cat[0] for cat in categories if cat[0]]
+        except SQLAlchemyError as e:
+            print(f"Error fetching categories: {e}")
+            return []
     def get_sales_by_branch_and_date_range_max(self, branch_name, start_date, end_date):
 
         from datetime import datetime
