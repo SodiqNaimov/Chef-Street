@@ -1,5 +1,5 @@
 msg_start = "🤝 Assalom Aleykum <b>{}</b>, <b>Chef Street botmizga Xush kelibsiz!</b>\nIltimos tilni tanlang 👇🏻 \n\n " \
-            "🤝 Здравствуйте <b>{}</b>, <b>Chef Street</b> в телеграм бот <b>Orzu Burger</b>\nПожалуйста, выберите язык 👇🏻"
+            "🤝 Здравствуйте <b>{}</b>, <b>Добро пожаловать</b> в телеграм бот <b>Chef Street</b>\nПожалуйста, выберите язык 👇🏻"
 
 get_name_message = {"uz": "Iltimos Familyangiz va Ismingizni kiriting:",
                     "ru": "Пожалуйста, введите Фамилию и Имя:"}
