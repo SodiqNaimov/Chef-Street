@@ -144,14 +144,7 @@ def check(rows, lang, distance):
 
     # Delivery cost calculation
     # 🚚 Delivery narxi
-    if 0 <= distance <= 4:
-        delivery_cost = 15000
-    elif distance <= 7:
-        delivery_cost = 20000
-    elif distance <= 80:
-        delivery_cost = 30000
-    else:
-        delivery_cost = 30000  # agar 80 dan oshsa ham
+    delivery_cost=5000
     # else:
     #     delivery_cost = 12000 + math.ceil(distance - 3) * 1500
 

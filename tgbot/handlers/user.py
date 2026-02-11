@@ -240,8 +240,19 @@ def show_product(message: Message, bot: TeleBot, user_language: str, state: Stat
     if rows:
         m = bot.send_message(message.from_user.id, header_txt[user_language], reply_markup=remove_keyboard)
         bot.delete_message(message.chat.id, m.message_id)
+        if rows[5]:
+            description_to_photo = product_info_txt[user_language].format(message.text, rows[1],rows[5], 1, rows[1], rows[1])
+        else:
+            description_to_photo = product_info_without_txt[user_language].format(
+                message.text,
+                rows[1],
+                1,
+                rows[1],
+                rows[1]
+            )
+
         count[message.from_user.id] = 1  # Initialize as integer 1 instead of dictionary
-        bot.send_photo(message.from_user.id, rows[2], caption=product_info_txt[user_language].format(message.text, rows[1], 1, rows[1], rows[1]), reply_markup=change_basket_count(user_language, rows[3], 1))
+        bot.send_photo(message.from_user.id, rows[2], caption=description_to_photo, reply_markup=change_basket_count(user_language, rows[3], 1))
         state.set(MyStates.none_st)
         # db.get_products_by_name()
     else:
@@ -306,7 +317,11 @@ def handle_product_count_change(call: CallbackQuery, bot: TeleBot, is_increase: 
         raw_price = float(price_clean)
         total_price = quantity * raw_price
         formatted_total = "{:,.0f}".format(total_price).replace(",", " ")
-        description_to_photo = product_info_txt[user_language].format(name, price, tanlaganda, price, formatted_total)
+        if row[5]:
+            description_to_photo = product_info_txt[user_language].format(name, price,row[5], tanlaganda, price, formatted_total)
+        else:
+            description_to_photo = product_info_without_txt[user_language].format(name, price, tanlaganda, price, formatted_total)
+
         markup = change_basket_count(user_language, row[3], tanlaganda)
         bot.edit_message_media(
             chat_id=call.message.chat.id,
@@ -1020,11 +1035,12 @@ def click_payment(message: Message, bot: TeleBot, user_language: str, state: Sta
 
         print(formatted_number2)
         total_amount = int(formatted_number2.replace(" ", "")) * 100
+        # total_amount = 1000 * 100
         description = text
     if message.text=="💳 Click":
         payload = "💳 Click"
         title = 'Click'
-        provider_token = "398062629:TEST:999999999_F91D8F69C042267444B74CC0B3C747757EB0E065"
+        provider_token = "333605228:LIVE:56322_7D072CA51BAA300B6032F993637576531DA13DD8"
         prices = [LabeledPrice(label="💳 Click", amount=total_amount)]
     else:
         title = 'Payme'

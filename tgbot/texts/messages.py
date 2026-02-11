@@ -70,8 +70,12 @@ basket_deleted_text = {"uz": "Sizning savatingiz bo'shatildi 🗑",
 
 header_txt = {"uz": """Quyidagilardan birini tanlang""",
               "ru": """Выберите одно из следующих"""}
-product_info_txt = {"uz": "<b>{}</b>\n\nNarxi: <b>{} so'm</b>\n\n{} x {} = {} so'm",
+product_info_txt = {"uz": "<b>{}</b>\n\nNarxi: <b>{} so'm</b>\n\n{}\n\n{} x {} = {} so'm",
+                    "ru": "<b>{}</b>\n\nЦена: <b>{} cум</b>\n\n{}\n\n{} x {} = {} cум"}
+
+product_info_without_txt = {"uz": "<b>{}</b>\n\nNarxi: <b>{} so'm</b>\n\n{} x {} = {} so'm",
                     "ru": "<b>{}</b>\n\nЦена: <b>{} cум</b>\n\n{} x {} = {} cум"}
+
 info_about_set_basket = {"uz": "<b>{}</b> mahsulotidan <b>{}</b> ta savatga qo'shildi",
                          "ru": "Товар <b>{}</b> добавлена в корзина <b>{} </b> из продукта",
                          "en": "Product <b>{}</b> added to cart <b>{}</b> from product"}

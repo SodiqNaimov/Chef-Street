@@ -1331,11 +1331,11 @@ class SQLite:
     def get_products_by_name(self, name, lang):
 
         if lang == "uz":
-            product = self.session.query(Product.name_uz, Product.price, Product.image, Product.id, Product.name_ru).filter(
+            product = self.session.query(Product.name_uz, Product.price, Product.image, Product.id, Product.name_ru, Product.description_uz).filter(
                 Product.name_uz == name
             ).first()
         elif lang == "ru":
-            product = self.session.query(Product.name_ru, Product.price, Product.image, Product.id, Product.name_uz).filter(
+            product = self.session.query(Product.name_ru, Product.price, Product.image, Product.id, Product.name_uz, Product.description_ru).filter(
                 Product.name_ru == name
             ).first()
         if product:
@@ -1344,7 +1344,8 @@ class SQLite:
             image = product[2]  # Ссылка на изображение
             id = product[3]
             name_ru = product[4]
-            return name, price, image, id,name_ru
+            description = product[5]
+            return name, price, image, id,name_ru, description
         else:
             return False
     def get_product_by_id(self, product_id, lang):
