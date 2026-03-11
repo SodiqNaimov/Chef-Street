@@ -240,19 +240,8 @@ def show_product(message: Message, bot: TeleBot, user_language: str, state: Stat
     if rows:
         m = bot.send_message(message.from_user.id, header_txt[user_language], reply_markup=remove_keyboard)
         bot.delete_message(message.chat.id, m.message_id)
-        if rows[5]:
-            description_to_photo = product_info_txt[user_language].format(message.text, rows[1],rows[5], 1, rows[1], rows[1])
-        else:
-            description_to_photo = product_info_without_txt[user_language].format(
-                message.text,
-                rows[1],
-                1,
-                rows[1],
-                rows[1]
-            )
-
         count[message.from_user.id] = 1  # Initialize as integer 1 instead of dictionary
-        bot.send_photo(message.from_user.id, rows[2], caption=description_to_photo, reply_markup=change_basket_count(user_language, rows[3], 1))
+        bot.send_photo(message.from_user.id, rows[2], caption=product_info_txt[user_language].format(message.text, rows[1], 1, rows[1], rows[1]), reply_markup=change_basket_count(user_language, rows[3], 1))
         state.set(MyStates.none_st)
         # db.get_products_by_name()
     else:
@@ -317,11 +306,7 @@ def handle_product_count_change(call: CallbackQuery, bot: TeleBot, is_increase: 
         raw_price = float(price_clean)
         total_price = quantity * raw_price
         formatted_total = "{:,.0f}".format(total_price).replace(",", " ")
-        if row[5]:
-            description_to_photo = product_info_txt[user_language].format(name, price,row[5], tanlaganda, price, formatted_total)
-        else:
-            description_to_photo = product_info_without_txt[user_language].format(name, price, tanlaganda, price, formatted_total)
-
+        description_to_photo = product_info_txt[user_language].format(name, price, tanlaganda, price, formatted_total)
         markup = change_basket_count(user_language, row[3], tanlaganda)
         bot.edit_message_media(
             chat_id=call.message.chat.id,
@@ -574,10 +559,7 @@ def accept_order(message: Message, bot: TeleBot, state: StateContext, user_langu
         )
         formatted_number3 = 0
         yax = 0
-        db.add_order_pickup(branch_d, order_number, "🤖 Telegram bot", "Jarayonda", payment_to_txt(payment), s,
-                     formatted_number3, timess, dates, "1000", comments,
-                     str(return_data(message, bot, 'location')), Longitude, Latitude,
-                     str(return_data(message, bot, 'phone_number')), yax, formatted_number2)
+
     else:
         distance = return_data(message, bot, 'closest_km')
 
@@ -612,15 +594,15 @@ def accept_order(message: Message, bot: TeleBot, state: StateContext, user_langu
             comment=comments or "-",
             tg=silka
         )
-        db.add_order(branch_d, order_number, "🤖 Telegram bot", "Jarayonda", payment_to_txt(payment), s,
-                     formatted_number3, timess, dates, "1000", comments,
-                     str(return_data(message, bot, 'location')), Longitude, Latitude,
-                     str(return_data(message, bot, 'phone_number')), yax, formatted_number2)
+
     adding_st = db.get_user_basket(message.from_user.id, 'uz')
 
     add_database_products_all(adding_st, order_number, message.from_user.id, branch_d, dates)
 
-
+    db.add_order(branch_d, order_number, "🤖 Telegram bot", "Jarayonda", payment_to_txt(payment), s,
+                 formatted_number3, timess, dates, "1000", comments,
+                 str(return_data(message, bot, 'location')), Longitude, Latitude,
+                 str(return_data(message, bot, 'phone_number')), yax, formatted_number2)
 
     markup = pickup_orders_btn(message)
     # db.register_addresses(return_data(message, bot, 'phone_number'),    return_data(message, bot, 'location'), Longitude, Latitude)
@@ -1028,29 +1010,28 @@ def click_payment(message: Message, bot: TeleBot, user_language: str, state: Sta
     if order_type in ['🚶 Borib olish', '🚶 Самовывоз']:
 
         text, formatted_number2 = check_pickup(rows, user_language)
-        text = build_order_text(rows)[0]
+        text = build_order_text(rows)
         total_amount = int(formatted_number2.replace(" ", "")) * 100
-        description = text
+        description = text + "\n🚖 Yetkazib berish narxi: 5000 so'm"
 
     else:
         text, formatted_number2, formatted_number3 = check(rows, user_language, distance)
-        text = build_order_text(rows)[0]
+        text = build_order_text(rows)
 
         print(formatted_number2)
         total_amount = int(formatted_number2.replace(" ", "")) * 100
-        # total_amount = 1000 * 100
-        description = text + "\n🚖 Yetkazib berish narxi: 5000 so'm"
+        description = text
     if message.text=="💳 Click":
         payload = "💳 Click"
         title = 'Click'
-        provider_token = "333605228:LIVE:56322_7D072CA51BAA300B6032F993637576531DA13DD8"
+        provider_token = "398062629:TEST:999999999_F91D8F69C042267444B74CC0B3C747757EB0E065"
         prices = [LabeledPrice(label="💳 Click", amount=total_amount)]
     else:
         title = 'Payme'
 
         payload = "💳 Payme"
 
-        provider_token = "387026696:LIVE:6989b8ff556737440814a974"
+        provider_token = "371317599:TEST:1769943092428"
         prices = [LabeledPrice(label="💳 Payme", amount=total_amount)]
     print(total_amount)
     currency = "UZS"
@@ -1173,14 +1154,13 @@ def successful_payment_payme(message: Message, bot: TeleBot, user_language: str,
             tg=silka
         )
 
-        db.add_order(branch_d, order_number, "🤖 Telegram bot", "Jarayonda", payment_to_txt(payment), s,
-                     formatted_number3, timess, dates, "1000", comments,
-                     str(return_data(message, bot, 'location')), Longitude, Latitude,
-                     str(return_data(message, bot, 'phone_number')), yax, formatted_number2)
-
     add_database_products_all(adding_st, order_number, message.from_user.id, branch_d, dates)
 
 
+    db.add_order(branch_d, order_number, "🤖 Telegram bot", "Jarayonda", payment_to_txt(payment), s,
+                 formatted_number3, timess, dates, "1000", comments,
+                 str(return_data(message, bot, 'location')), Longitude, Latitude,
+                 str(return_data(message, bot, 'phone_number')), yax, formatted_number2)
 
     markup = pickup_orders_btn(message)
     # db.register_addresses(return_data(message, bot, 'phone_number'),    return_data(message, bot, 'location'), Longitude, Latitude)
