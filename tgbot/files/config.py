@@ -1,5 +1,7 @@
 from pathlib import Path
 
+from tgbot.files.payment_tokens import env_token
+
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
 full_path = BASE_DIR.joinpath('files', 'DataBase.db')
@@ -13,5 +15,5 @@ full_path_str = full_path_str.replace("\\", "/")
 db_path = full_path_str
 
 # TOKEN
-token = '6574372160:AAHHgN30vzbG-rEtmx0mAjw8sCJL0pB8qTw'git
+token = env_token
 
