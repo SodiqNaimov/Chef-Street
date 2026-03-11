@@ -1,5 +1,5 @@
 msg_start = "🤝 Assalom Aleykum <b>{}</b>, <b>Chef Street botmizga Xush kelibsiz!</b>\nIltimos tilni tanlang 👇🏻 \n\n " \
-            "🤝 Здравствуйте <b>{}</b>, <b>Chef Street</b> в телеграм бот <b>Orzu Burger</b>\nПожалуйста, выберите язык 👇🏻"
+            "🤝 Здравствуйте <b>{}</b>, <b>Добро пожаловать</b> в телеграм бот <b>Chef Street</b>\nПожалуйста, выберите язык 👇🏻"
 
 get_name_message = {"uz": "Iltimos Familyangiz va Ismingizni kiriting:",
                     "ru": "Пожалуйста, введите Фамилию и Имя:"}
@@ -70,8 +70,12 @@ basket_deleted_text = {"uz": "Sizning savatingiz bo'shatildi 🗑",
 
 header_txt = {"uz": """Quyidagilardan birini tanlang""",
               "ru": """Выберите одно из следующих"""}
-product_info_txt = {"uz": "<b>{}</b>\n\nNarxi: <b>{} so'm</b>\n\n{} x {} = {} so'm",
+product_info_txt = {"uz": "<b>{}</b>\n\nNarxi: <b>{} so'm</b>\n\n{}\n\n{} x {} = {} so'm",
+                    "ru": "<b>{}</b>\n\nЦена: <b>{} cум</b>\n\n{}\n\n{} x {} = {} cум"}
+
+product_info_without_txt = {"uz": "<b>{}</b>\n\nNarxi: <b>{} so'm</b>\n\n{} x {} = {} so'm",
                     "ru": "<b>{}</b>\n\nЦена: <b>{} cум</b>\n\n{} x {} = {} cум"}
+
 info_about_set_basket = {"uz": "<b>{}</b> mahsulotidan <b>{}</b> ta savatga qo'shildi",
                          "ru": "Товар <b>{}</b> добавлена в корзина <b>{} </b> из продукта",
                          "en": "Product <b>{}</b> added to cart <b>{}</b> from product"}
@@ -124,7 +128,7 @@ group_txt = (
 group_pickup_txt = (
     "<b>Yangi buyurtma!</b>\n\n"
     "🧾 <b>Buyurtma raqami:</b> #{}\n\n"  # placeholder 1
-    "{}\n\n"  # placeholders 2, 3
+    "{}"  # placeholders 2, 3
     "<b>Jami:</b> {} <b>so'm</b>\n\n"
     "🚶 Olib ketish\n\n<b>💰 To'lov turi: {}</b>\n\n"
     "{}\n\n"  # placeholder 4

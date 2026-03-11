@@ -1306,7 +1306,10 @@ class SQLite:
         # Convert time string to time object
         time_obj = datetime.strptime(ordered_time, '%H:%M').time()
         clean_product_cost = int(total_cost.replace(' ', ''))
-        clean_delivery_cost = int(delivery_cost.replace(' ', ''))
+        try:
+            clean_delivery_cost = int(delivery_cost.replace(' ', ''))
+        except Exception as e:
+            print(e)
         orders = Order(
             branch_name=branch_name,
             order_number=order_number,
@@ -1328,14 +1331,43 @@ class SQLite:
         )
         self.session.add(orders)
         self.session.commit()
+
+    def add_order_pickup(self, branch_name, order_number, get_order_from, status, payment_type, product_cost, delivery_cost,
+                  ordered_time, order_date, m_id, comment, address, long, lang, phone_number, distance, total_cost):
+        date_obj = datetime.strptime(order_date, '%Y-%m-%d').date()
+
+        # Convert time string to time object
+        time_obj = datetime.strptime(ordered_time, '%H:%M').time()
+        clean_product_cost = int(total_cost.replace(' ', ''))
+        orders = Order(
+            branch_name=branch_name,
+            order_number=order_number,
+            get_order_from=get_order_from,
+            status=status,
+            payment_type=payment_type,
+            product_cost=product_cost,
+            delivery_cost=0,
+            ordered=time_obj,  # Combine date and time
+            date=date_obj,
+            m_id=m_id,
+            comment=comment,
+            address=address,
+            long=long,
+            lang=lang,
+            phone_number=phone_number,
+            distance=distance,
+            total_cost=clean_product_cost
+        )
+        self.session.add(orders)
+        self.session.commit()
     def get_products_by_name(self, name, lang):
 
         if lang == "uz":
-            product = self.session.query(Product.name_uz, Product.price, Product.image, Product.id, Product.name_ru).filter(
+            product = self.session.query(Product.name_uz, Product.price, Product.image, Product.id, Product.name_ru, Product.description_uz).filter(
                 Product.name_uz == name
             ).first()
         elif lang == "ru":
-            product = self.session.query(Product.name_ru, Product.price, Product.image, Product.id, Product.name_uz).filter(
+            product = self.session.query(Product.name_ru, Product.price, Product.image, Product.id, Product.name_uz, Product.description_ru).filter(
                 Product.name_ru == name
             ).first()
         if product:
@@ -1344,7 +1376,8 @@ class SQLite:
             image = product[2]  # Ссылка на изображение
             id = product[3]
             name_ru = product[4]
-            return name, price, image, id,name_ru
+            description = product[5]
+            return name, price, image, id,name_ru, description
         else:
             return False
     def get_product_by_id(self, product_id, lang):
@@ -1821,6 +1854,27 @@ class SQLite:
             }
         finally:
             session.close()
+    def get_products(self, lang):
+        """Get product categories in specified language.
+
+        Args:
+            lang: Language code ('uz', 'ru', or 'en')
+
+        Returns:
+            List of category names
+        """
+        lang = lang.lower()
+        if lang not in ('uz', 'ru', 'en'):
+            lang = 'en'  # Default to English
+
+        column = getattr(Product, f"name_{lang}")
+        print(column)
+        try:
+            categories = self.session.query(column).distinct().all()
+            return [cat[0] for cat in categories if cat[0]]
+        except SQLAlchemyError as e:
+            print(f"Error fetching categories: {e}")
+            return []
     def get_sales_by_branch_and_date_range_max(self, branch_name, start_date, end_date):
 
         from datetime import datetime
