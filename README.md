@@ -1,6 +1,27 @@
-telebot_template
-Template for synchronous implementation of telebot
+ChefStreet
+Telegram bot for the ChefStreet project (synchronous telebot implementation).
 
-You are welcome to make pull requests or open issues to improve template.
+Quick start
 
-Note that this template requires pyTelegramBotAPI version higher or equal to 4.4.0.
+- Install dependencies: `pip install -r requirements.txt`
+- Configure the bot: edit `tgbot/files/config.py`
+- Run: `python main.py`
+
+Service (Linux)
+
+- systemd unit available at `systemd/tgbot.service` (optional)
+
+Project layout
+
+- `main.py` — application entry point
+- `tgbot/` — bot package containing handlers, filters, middleware, helpers, models, states, and texts
+- `requirements.txt` — Python dependencies
+
+Requirements
+
+- Python 3.10+
+- `pyTelegramBotAPI` >= 4.30.0
+
+Contributing
+
+Feel free to open issues or submit pull requests to improve the project.
