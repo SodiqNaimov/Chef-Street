@@ -2,6 +2,8 @@ from telebot import TeleBot
 from telebot.types import *  # ReplyKeyboardRemove, CallbackQuery
 # for state
 from telebot.states.sync.context import StateContext
+
+from tgbot.files.payment_tokens import payme, click
 # for define states
 from tgbot.states.state import Register, MyStates
 # messages
@@ -1036,21 +1038,19 @@ def click_payment(message: Message, bot: TeleBot, user_language: str, state: Sta
         text, formatted_number2, formatted_number3 = check(rows, user_language, distance)
         text = build_order_text(rows)[0]
 
-        print(formatted_number2)
         total_amount = int(formatted_number2.replace(" ", "")) * 100
-        # total_amount = 1000 * 100
         description = text + "\n🚖 Yetkazib berish narxi: 5000 so'm"
     if message.text=="💳 Click":
         payload = "💳 Click"
         title = 'Click'
-        provider_token = "333605228:LIVE:56322_7D072CA51BAA300B6032F993637576531DA13DD8"
+        provider_token = click
         prices = [LabeledPrice(label="💳 Click", amount=total_amount)]
     else:
         title = 'Payme'
 
         payload = "💳 Payme"
 
-        provider_token = "387026696:LIVE:6989b8ff556737440814a974"
+        provider_token = payme
         prices = [LabeledPrice(label="💳 Payme", amount=total_amount)]
     print(total_amount)
     currency = "UZS"
