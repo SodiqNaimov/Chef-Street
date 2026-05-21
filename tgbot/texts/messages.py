@@ -1,15 +1,16 @@
-msg_start = "🤝 Assalom Aleykum <b>{}</b>, <b>Chef Street botmizga Xush kelibsiz!</b>\nIltimos tilni tanlang 👇🏻 \n\n " \
-            "🤝 Здравствуйте <b>{}</b>, <b>Добро пожаловать</b> в телеграм бот <b>Chef Street</b>\nПожалуйста, выберите язык 👇🏻"
-
+msg_start = "🤝 Assalom Aleykym <b>{}</b>, <b>Marsexpress24 botmizga Xush kelibsiz!</b>\nIltimos tilni tanlang 👇🏻 \n\n " \
+            "🤝 Здравствуйте <b>{}</b>, <b>Добро пожаловать</b> в телеграм бот <b>Marsexpress24</b>\nПожалуйста, выберите язык 👇🏻"
+#
 get_name_message = {"uz": "Iltimos Familyangiz va Ismingizni kiriting:",
                     "ru": "Пожалуйста, введите Фамилию и Имя:"}
 headers_message = {
     "uz": "Buyurtma berishni boshlash uchun 🛍 Buyurtma berish tugmasini bosing.\n\nShuningdek, kafemiz lokatsiyasi hamda kontaktlari bilan tanishishingiz mumkin.",
     "ru": "Для заказа нажмите 🛍 Заказать.\n\nВы также можете ознакомиться с местонахождением нашего Кафе, а также с контактами."
 }
-contact_branches_second = {
-    "uz": "Buyurtma va boshqa ❓ savollar bo'yicha javob olish uchun <b>☎️ +998914429224 +998936239224 yoki +998904123101</b> murojaat qiling, barchasiga javob beramiz.",
-    "ru": "Получить ответы на заказы и другие ❓ вопросы <b>☎️+998914429224 +998936239224 или +998904123101</b> обращайтесь, мы ответим всем."}
+contact_branches_second =  {
+    "uz": "Buyurtma va boshqa ❓ savollar bo'yicha javob olish uchun <b>☎️ +998901017110, +998993479296, +998913137110 yoki +998902137110 </b> murojaat qiling, barchasiga javob beramiz.",
+    "ru": "Получить ответы на заказы и другие ❓ вопросы <b>☎️+998901017110, +998993479296, +998913137110 или +998902137110</b> обращайтесь, мы ответим всем."
+}
 
 social_media_message = {
     "uz": "<b>📲Ijtimoiy tarmoqlarimizga obuna bo'ling va ⚡️ oxirgi chegirmalar,🔥 aksiyalar va yangiliklardan xabardor bo'ling.👇🏻</b>",

@@ -3,7 +3,6 @@ from telebot.types import *  # ReplyKeyboardRemove, CallbackQuery
 # for state
 from telebot.states.sync.context import StateContext
 
-from tgbot.files.payment_tokens import payme, click
 # for define states
 from tgbot.states.state import Register, MyStates
 # messages
@@ -70,7 +69,7 @@ def social_media(message: Message, bot: TeleBot, user_language: str,  state: Sta
     header(message, bot, user_language, state)
 
 def location_func(message: Message, bot: TeleBot, user_language: str,  state: StateContext):
-    bot.send_location(message.chat.id, 39.781011, 64.403939)
+    bot.send_location(message.chat.id, 39.643397, 66.91944)
     bot.send_message(message.chat.id, location_message[user_language])
     header(message, bot, user_language, state)
 
@@ -118,16 +117,16 @@ def send_group_complaint(message: Message, bot: TeleBot, user_language: str,  st
             if message.caption:
                 caption = f"{caption}\n\n{user_complaint}"
 
-                bot.copy_message(chat_id=-1003871440267, from_chat_id=message.from_user.id, message_id=message.message_id, caption=caption, )
+                bot.copy_message(chat_id=-1003853942533, from_chat_id=message.from_user.id, message_id=message.message_id, caption=caption, )
             else:
                 caption = f"{user_complaint}"
 
-                bot.copy_message(chat_id=-1003871440267, from_chat_id=message.from_user.id, message_id=message.message_id, caption=caption)
+                bot.copy_message(chat_id=-1003853942533, from_chat_id=message.from_user.id, message_id=message.message_id, caption=caption)
 
         else:
             caption = f"{message.text}\n\n{user_complaint}"
 
-            bot.send_message(-1003871440267,caption)
+            bot.send_message(-1003853942533,caption)
 
     else:
         bot.send_message(message.from_user.id, complaint_type_complaint_not[user_language],  reply_markup=reply_markup(back_btn[user_language], 2))
@@ -583,10 +582,10 @@ def accept_order(message: Message, bot: TeleBot, state: StateContext, user_langu
     else:
         distance = return_data(message, bot, 'closest_km')
 
-        bot.send_location(-1003871440267, Latitude,
+        bot.send_location(-1003853942533, Latitude,
                           Longitude)
         yax = return_data(message, bot, 'closest_km')
-        bot.send_message(-1003871440267, f"🗣 Fillialdan klientgacha bo'lgan <b>masofa 📍 {yax} km</b>")
+        bot.send_message(-1003853942533, f"🗣 Fillialdan klientgacha bo'lgan <b>masofa 📍 {yax} km</b>")
         adrdress_phone = "📍Address: " + str(return_data(message, bot, 'location')) + '\n' + '📱 Telefon nomer: ' + str(
             return_data(message, bot, 'phone_number'))
 
@@ -627,7 +626,7 @@ def accept_order(message: Message, bot: TeleBot, state: StateContext, user_langu
     markup = pickup_orders_btn(message)
     # db.register_addresses(return_data(message, bot, 'phone_number'),    return_data(message, bot, 'location'), Longitude, Latitude)
 
-    bot.send_message(-1003871440267,
+    bot.send_message(-1003853942533,
                          groups_txt,
                          reply_markup=markup)
 
@@ -1141,10 +1140,10 @@ def successful_payment_payme(message: Message, bot: TeleBot, user_language: str,
     else:
         distance = return_data(message, bot, 'closest_km')
 
-        bot.send_location(-1003871440267, Latitude,
+        bot.send_location(-1003853942533, Latitude,
                           Longitude)
         yax = return_data(message, bot, 'closest_km')
-        bot.send_message(-1003871440267, f"🗣 Fillialdan klientgacha bo'lgan <b>masofa 📍 {yax} km</b>")
+        bot.send_message(-1003853942533, f"🗣 Fillialdan klientgacha bo'lgan <b>masofa 📍 {yax} km</b>")
         adrdress_phone = "📍Address: " + str(return_data(message, bot, 'location')) + '\n' + '📱 Telefon nomer: ' + str(
             return_data(message, bot, 'phone_number'))
 
@@ -1185,7 +1184,7 @@ def successful_payment_payme(message: Message, bot: TeleBot, user_language: str,
     markup = pickup_orders_btn(message)
     # db.register_addresses(return_data(message, bot, 'phone_number'),    return_data(message, bot, 'location'), Longitude, Latitude)
 
-    bot.send_message(-1003871440267,
+    bot.send_message(-1003853942533,
                          groups_txt,
                          reply_markup=markup)
 
